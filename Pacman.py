@@ -1,5 +1,6 @@
 from Config import *
 import pygame
+from pygame import sprite
 class pacman:
     def __init__(self):
         #posicion inicial pacman
