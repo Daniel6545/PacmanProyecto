@@ -1,11 +1,10 @@
 import pygame
 import sys
 
-from pygame.examples.sprite_texture import group
-
 from Config import *
 from Pacman import pacman
 from Pared import Muro
+from Coin import Coin
 
 class Juego:
     def __init__(self):
@@ -21,7 +20,10 @@ class Juego:
         self.muro_grupo = pygame.sprite.Group(self.pared)
 
         self.clock = pygame.time.Clock()
-
+        self.fuente = pygame.font.SysFont("Calibri", 20)  #fuente SCORE
+        self.puntuacion = 0   #guardará los puntos que Pac-Man obtiene al comer monedas
+        self.coin = Coin(400, 100)   #crea una moneda aleatoria en el mapa
+        self.coin_group = pygame.sprite.Group(self.coin) #agrupa esa moneda dentro de un Sprite
     def update(self):
         keys = pygame.key.get_pressed()
 
@@ -40,6 +42,13 @@ class Juego:
             self.pacman.mover(-self.direccion_actual[0], -self.direccion_actual[1])
             self.direccion_actual = (0, 0)
 
+    #Colision moneda
+
+
+        if pygame.sprite.spritecollide(self.pacman, self.coin_group, True):
+            self.puntuacion += 10
+            print(f"Puntuación: {self.puntuacion}")
+
     def eventos(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -49,7 +58,14 @@ class Juego:
         self.ventana.fill(BLACK)
         self.pacman.draw(self.ventana)
         self.pared.draw(self.ventana)
-        pygame.display.flip()
+
+
+        self.coin_group.draw(self.ventana)        #dibuja moneda en ventana
+        # Mostrar puntuación
+        texto = self.fuente.render(f"SCORE: {self.puntuacion}", True, WHITE)
+        self.ventana.blit(texto, (10, 10))
+
+        pygame.display.flip()   #Esta función se encarga de actualizar la pantalla
 
     def run(self):
         while self.running:
