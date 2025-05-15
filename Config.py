@@ -2,7 +2,7 @@ SCREEN_WIDTH = 567
 SCREEN_HEIGHT = 483
 #tamaño del jugador
 tamaño= 20
-Pac_Vel= 0.01
+Pac_Vel= 1.5
 
 
 
