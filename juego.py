@@ -7,15 +7,19 @@ from Pared import Muro
 from Coin import Coin
 from Blinky import Blinky
 
+
 class Juego:
     def __init__(self):
         self.direccion_actual = (0, 0)
         self.ventana = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption("Pacman")
+        self.datos = datos
+        self.tile_size = tile_size
+        self.colores_paredes = colores_paredes
 
         self.running = True
-        self.pacman = pacman()
-        self.pacman_group = pygame.sprite.Group(self.pacman)
+        #self.pacman = pacman()
+        #self.pacman_group = pygame.sprite.Group(self.pacman)
 
         self.blinky = Blinky()
         self.fantasmas_group = pygame.sprite.Group(self.blinky)
@@ -26,8 +30,11 @@ class Juego:
         self.clock = pygame.time.Clock()
         self.fuente = pygame.font.SysFont("Calibri", 20)  #fuente SCORE
         self.puntuacion = 0   #guardará los puntos que Pac-Man obtiene al comer monedas
-        self.coin = Coin(400, 100)   #crea una moneda aleatoria en el mapa
-        self.coin_group = pygame.sprite.Group(self.coin) #agrupa esa moneda dentro de un Sprite
+        self.coin_group = pygame.sprite.Group() #agrupa esa moneda dentro de un Sprite
+
+        self.mapa_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.crearmapa()  # Dibuja el mapa sobre esa surface
+
 
 
 
@@ -61,21 +68,48 @@ class Juego:
             if event.type == pygame.QUIT:
                 self.running = False
 
+    def crearmapa(self):
+        for y, fila in enumerate(self.datos):
+            for x, celda in enumerate(fila):
+                pos = (x * self.tile_size, y * self.tile_size)
+
+                if celda in self.colores_paredes:
+                    pygame.draw.rect(self.mapa_surface, self.colores_paredes[celda],
+                                     (*pos, self.tile_size, self.tile_size))
+                elif celda == "0":
+                    cx = x * self.tile_size + self.tile_size // 2
+                    cy = y * self.tile_size + self.tile_size // 2
+                    moneda = Coin(cx, cy)
+                    self.coin_group.add(moneda)
+                elif celda == "S":
+                    pygame.draw.circle(self.mapa_surface, Dorado,
+                                       (pos[0] + self.tile_size // 2, pos[1] + self.tile_size // 2), 5)
+                elif celda == "P":
+                    pac_x = x * self.tile_size + self.tile_size // 2
+                    pac_y = y * self.tile_size + self.tile_size // 2
+                    self.pacman = pacman(pac_x, pac_y)
+                    self.pacman_group = pygame.sprite.Group(self.pacman)
+
+
     def draw(self):
-        self.ventana.fill(BLACK)
-        self.pacman.draw(self.ventana)
-        self.pared.draw(self.ventana)
-        self.coin_group.draw(self.ventana)        #dibuja moneda en ventana
-        #Dibujar Fantasmas
+        # Dibujar el mapa una vez ya creado
+        self.ventana.blit(self.mapa_surface, (0, 0))
+
+        # Dibujar monedas
+        self.coin_group.draw(self.ventana)
+
+        # Dibujar fantasmas
         for fantasma in self.fantasmas_group:
             fantasma.draw(self.ventana)
+
+        # Dibujar Pac-Man
+        self.pacman.draw(self.ventana)
+
         # Mostrar puntuación
         texto = self.fuente.render(f"SCORE: {self.puntuacion}", True, WHITE)
         self.ventana.blit(texto, (10, 10))
 
-
-        pygame.display.flip()   #Esta función se encarga de actualizar la pantalla
-
+        pygame.display.flip()  # Esta función se encarga de actualizar la pantalla
     def run(self):
         while self.running:
             self.eventos()

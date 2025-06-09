@@ -4,11 +4,13 @@ from pygame.sprite import Sprite
 
 
 class pacman(Sprite):
-    def __init__(self):
-        # posicion inicial pacman
-        self.x = SCREEN_WIDTH // 2
-        self.y = SCREEN_HEIGHT // 2
-
+    def __init__(self, x=None, y=None):
+        if x is None:
+            x = SCREEN_WIDTH // 2
+        if y is None:
+            y = SCREEN_HEIGHT // 2
+        self.x = x
+        self.y = y
         # CREAR JUGADPR:
         super().__init__()
         self.rect = pygame.Rect(

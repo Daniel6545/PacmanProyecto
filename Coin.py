@@ -7,8 +7,9 @@ class Coin(Sprite):
         super().__init__()
         self.image = pygame.Surface((tamaño // 2, tamaño // 2), pygame.SRCALPHA)
         pygame.draw.circle(self.image, WHITE, (tamaño // 6, tamaño // 6), tamaño // 6)
-        self.rect = self.image.get_rect()
-        self.rect.center = (x, y)  # Establecemos la posición de la moneda
+        self.rect = self.image.get_rect(center=(x, y))  # Establecemos la posición de la moneda
+
+
 
     def draw(self, ventana):
         ventana.blit(self.image, self.rect)
