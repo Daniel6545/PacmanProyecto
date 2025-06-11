@@ -1,7 +1,9 @@
 SCREEN_WIDTH = 567
 SCREEN_HEIGHT = 504
 #tamaño del jugador
-tamaño= 15
+tamaño= 21
+tamaño_pacman = 20  # o el tamaño que prefieras, menor que 21
+
 Pac_Vel= 1.75
 blinky_speed= 1.2
 directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]

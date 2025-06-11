@@ -18,48 +18,47 @@ class Juego:
         self.colores_paredes = colores_paredes
 
         self.running = True
-        #self.pacman = pacman()
-        #self.pacman_group = pygame.sprite.Group(self.pacman)
 
         self.blinky = Blinky()
         self.fantasmas_group = pygame.sprite.Group(self.blinky)
 
-        self.pared = Muro(50, 200)
-        self.muro_grupo = pygame.sprite.Group(self.pared)
+        self.muro_grupo = pygame.sprite.Group()
 
         self.clock = pygame.time.Clock()
-        self.fuente = pygame.font.SysFont("Calibri", 20)  #fuente SCORE
-        self.puntuacion = 0   #guardará los puntos que Pac-Man obtiene al comer monedas
-        self.coin_group = pygame.sprite.Group() #agrupa esa moneda dentro de un Sprite
+        self.fuente = pygame.font.SysFont("Calibri", 20)
+        self.puntuacion = 0
+        self.coin_group = pygame.sprite.Group()
+        self.direccion_actual = (0, 0)
 
         self.mapa_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
-        self.crearmapa()  # Dibuja el mapa sobre esa surface
-
-
-
+        self.crearmapa()  # Crea muros, monedas y Pac-Man
 
     def update(self):
         keys = pygame.key.get_pressed()
-        dx = keys[pygame.K_RIGHT] - keys[pygame.K_LEFT]
-        dy = keys[pygame.K_DOWN] - keys[pygame.K_UP]
-        if dx != 0:
-            self.direccion_actual = (dx, 0)
-        elif dy != 0:
-            self.direccion_actual = (0, dy)
 
-        self.pacman.mover(*self.direccion_actual)
-        #mover fant
+        # Cambiar solo direccion objetivo según tecla
+        if keys[pygame.K_RIGHT]:
+            self.pacman.direccion_objetivo = (1, 0)
+        elif keys[pygame.K_LEFT]:
+            self.pacman.direccion_objetivo = (-1, 0)
+        elif keys[pygame.K_UP]:
+            self.pacman.direccion_objetivo = (0, -1)
+        elif keys[pygame.K_DOWN]:
+            self.pacman.direccion_objetivo = (0, 1)
+
+        # Mover Pacman pasando grupo de muros para colision
+        self.pacman.mover(self.muro_grupo)
+
+        # Mover fantasmas
         for fantasma in self.fantasmas_group:
             fantasma.move((self.pacman.x, self.pacman.y))
-    #colision muros (Pacman)
-        if pygame.sprite.groupcollide(self.pacman_group, self.muro_grupo, False, False):
-            self.pacman.mover(-self.direccion_actual[0], -self.direccion_actual[1])
-            self.direccion_actual = (0, 0)
-    #Colision moneda
+
+        # Colisiones monedas
         if pygame.sprite.spritecollide(self.pacman, self.coin_group, True):
             self.puntuacion += 10
             print(f"Puntuación: {self.puntuacion}")
-    #colision Fantasma:
+
+        # Colisión con fantasmas
         if pygame.sprite.spritecollide(self.pacman, self.fantasmas_group, False):
             print("¡Has sido atrapado por el fantasma!")
 
@@ -74,25 +73,27 @@ class Juego:
                 pos = (x * self.tile_size, y * self.tile_size)
 
                 if celda in self.colores_paredes:
-                    pygame.draw.rect(self.mapa_surface, self.colores_paredes[celda],
-                                     (*pos, self.tile_size, self.tile_size))
+                    muro = Muro(pos[0], pos[1])
+                    muro.image.fill(self.colores_paredes[celda])  # Pinta el muro con el color correcto
+                    self.muro_grupo.add(muro)
+
                 elif celda == "0":
                     cx = x * self.tile_size + self.tile_size // 2
                     cy = y * self.tile_size + self.tile_size // 2
                     moneda = Coin(cx, cy)
                     self.coin_group.add(moneda)
+
                 elif celda == "S":
                     pygame.draw.circle(self.mapa_surface, Dorado,
                                        (pos[0] + self.tile_size // 2, pos[1] + self.tile_size // 2), 5)
+
                 elif celda == "P":
                     pac_x = x * self.tile_size + self.tile_size // 2
                     pac_y = y * self.tile_size + self.tile_size // 2
                     self.pacman = pacman(pac_x, pac_y)
                     self.pacman_group = pygame.sprite.Group(self.pacman)
 
-
     def draw(self):
-        # Dibujar el mapa una vez ya creado
         self.ventana.blit(self.mapa_surface, (0, 0))
 
         # Dibujar monedas
@@ -101,6 +102,8 @@ class Juego:
         # Dibujar fantasmas
         for fantasma in self.fantasmas_group:
             fantasma.draw(self.ventana)
+        #Dibujar muros
+        self.muro_grupo.draw(self.ventana)
 
         # Dibujar Pac-Man
         self.pacman.draw(self.ventana)
@@ -109,7 +112,8 @@ class Juego:
         texto = self.fuente.render(f"SCORE: {self.puntuacion}", True, WHITE)
         self.ventana.blit(texto, (10, 10))
 
-        pygame.display.flip()  # Esta función se encarga de actualizar la pantalla
+        pygame.display.flip()
+
     def run(self):
         while self.running:
             self.eventos()
