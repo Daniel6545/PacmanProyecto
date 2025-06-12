@@ -4,31 +4,28 @@ from pygame.sprite import Sprite
 from Config import *
 
 class Blinky(Sprite):
-    def __init__(self):
+    def __init__(self, muros_grupo, x_inicial, y_inicial):
         super().__init__()
-        self.x = SCREEN_WIDTH
-        self.y = SCREEN_HEIGHT // 2
-
-        # Configuración inicial
+        self.x = x_inicial
+        self.y = y_inicial
+        self.direction = 0
         self.color = Rojo
-        self.speed = blinky_speed  # Usamos la velocidad de Config.py
+        self.speed = blinky_speed
         self.scatter_target = scatter_target
-        self.mode = "chase"  # Modos posibles: chase/scatter/frightened/eaten
-        self.directions = directions  # Usamos las direcciones de Config.py
-
-        # Crear rectángulo para colisiones
+        self.mode = "chase"
+        self.directions = directions
+        self.muros_grupo = muros_grupo
         self.rect = pygame.Rect(
             self.x - tamaño // 2,
             self.y - tamaño // 2,
             tamaño,
             tamaño
         )
-
-        # Temporizador para cambio de modos
+        self.jaula_limite_y = self.y - 2 * tamaño
         self.mode_timer = 0
         self.mode_duration = {
-            "chase": 20000,  # 20 segundos en modo persecución
-            "scatter": 7000  # 7 segundos en modo dispersión
+            "chase": 20000,
+            "scatter": 7000
         }
 
     def distance(self, pos1, pos2):
@@ -47,31 +44,75 @@ class Blinky(Sprite):
             self.mode_timer = current_time
 
     def move(self, pacman_pos):
-        """Mueve al fantasma según su modo actual."""
         self.update_mode()
+        self.target = pacman_pos if self.mode == "chase" else self.scatter_target
+        direction_vectors = {
+            0: (1, 0),  # derecha
+            1: (-1, 0),  # izquierda
+            2: (0, -1),  # arriba
+            3: (0, 1)  # abajo
+        }
 
-        # Determina el objetivo según el modo
-        target_pos = pacman_pos if self.mode == "chase" else self.scatter_target
+        self.actualizar_turns(self.muros_grupo)
 
-        best_dir = None
-        min_dist = float('inf')
+        posibles_dirs = [d for d in range(4) if self.turns[d]]
 
-        # Evalúa cada dirección posible
-        for dx, dy in self.directions:
-            new_x = self.x + dx * self.speed
-            new_y = self.y + dy * self.speed
-            dist = self.distance((new_x, new_y), target_pos)
+        if posibles_dirs:
+            distancias = []
+            direccion_opuesta = {
+                0: 1,
+                1: 0,
+                2: 3,
+                3: 2
+            }
 
-            if dist < min_dist:
-                min_dist = dist
-                best_dir = (dx, dy)
+            for d in posibles_dirs:
+                # Evitar girar 180º a menos que sea la única opción
+                if d == direccion_opuesta[self.direction] and len(posibles_dirs) > 1:
+                    continue
+                dx, dy = direction_vectors[d]
+                nueva_x = self.x + dx * self.speed
+                nueva_y = self.y + dy * self.speed
+                distancia = math.hypot(self.target[0] - nueva_x, self.target[1] - nueva_y)
+                distancias.append((distancia, d))
 
-        # Aplica el movimiento
-        if best_dir:
-            self.x += best_dir[0] * self.speed
-            self.y += best_dir[1] * self.speed
-            self.rect.center = (self.x, self.y)
+            if distancias:
+                distancias.sort(key=lambda x: x[0])
+                self.direction = distancias[0][1]
+        # Mover en la dirección elegida
+        if self.turns[self.direction]:
+            dx, dy = direction_vectors[self.direction]
+            self.x += dx * self.speed
+            self.y += dy * self.speed
 
+        self.rect.center = (self.x, self.y)
+        return self.x, self.y, self.direction
+
+    def actualizar_turns(self, muros_group):
+        self.rect.center = (self.x, self.y)
+        # Chequear colisión probando mover Blinky un paso en cada dirección
+        self.turns = [False, False, False, False]
+        step = self.speed  # o un valor pequeño
+
+        # derecha
+        self.rect.x += step
+        self.turns[0] = not pygame.sprite.spritecollideany(self, muros_group)
+        self.rect.x -= step
+
+        # izquierda
+        self.rect.x -= step
+        self.turns[1] = not pygame.sprite.spritecollideany(self, muros_group)
+        self.rect.x += step
+
+        # arriba
+        self.rect.y -= step
+        self.turns[2] = not pygame.sprite.spritecollideany(self, muros_group)
+        self.rect.y += step
+
+        # abajo
+        self.rect.y += step
+        self.turns[3] = not pygame.sprite.spritecollideany(self, muros_group)
+        self.rect.y -= step
     def draw(self, screen):
         """Dibuja al fantasma en la pantalla."""
-        pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), tamaño // 2)
+        pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), 7)

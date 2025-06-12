@@ -1,11 +1,11 @@
 SCREEN_WIDTH = 567
 SCREEN_HEIGHT = 504
 #tamaño del jugador
-tamaño= 21
+tamaño = 21
 tamaño_pacman = 20  # o el tamaño que prefieras, menor que 21
-
+tamaño_fant = 19
 Pac_Vel= 1.75
-blinky_speed= 1.2
+blinky_speed= 1.3
 directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
 scatter_target = [SCREEN_WIDTH - 30, 30]
 BLACK= (0,0,0)
@@ -35,8 +35,8 @@ datos = [
     "100000022220300004440000001",
     "101111020000301104000111101",
     "X010S10201103011044401S010X",
-    "100010000000000000000010001",
-    "1010101011011F1101101010101",
+    "1000100000000B0000000010001",
+    "1010101011011x1101101010101",
     "100000001101FFF101100000001",
     "101110101101111101101011101",
     "10000010100XXXXX00101000001",
