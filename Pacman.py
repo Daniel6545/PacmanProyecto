@@ -60,5 +60,9 @@ class pacman(Sprite):
 
         self.rect.topleft = (int(self.x), int(self.y))
 
+    def detener(self):
+        self.direccion_actual = (0, 0)
+        self.direccion_objetivo = (0, 0)
+
     def draw(self, ventana):
         ventana.blit(self.image, self.rect)

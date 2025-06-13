@@ -10,7 +10,6 @@ from Blinky import Blinky
 
 class Juego:
     def __init__(self):
-        self.direccion_actual = (0, 0)
         self.ventana = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption("Pacman")
         self.datos = datos
@@ -18,18 +17,18 @@ class Juego:
         self.colores_paredes = colores_paredes
 
         self.running = True
-
+        self.direccion_actual = (0, 0)
         self.blinky = Blinky()
         self.fantasmas_group = pygame.sprite.Group(self.blinky)
 
         self.muro_grupo = pygame.sprite.Group()
 
         self.clock = pygame.time.Clock()
-        self.fuente = pygame.font.SysFont("Calibri", 20)
-        self.puntuacion = 0
+        self.fuente = pygame.font.SysFont("Calibri", 20)  #fuente que aparece score
+        self.puntuacion = 0      # Puntuación inicial
+        self.vidas = 3    #vidas PacMan
+        self.mostrar_ready = True
         self.coin_group = pygame.sprite.Group()
-        self.direccion_actual = (0, 0)
-
         self.mapa_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.crearmapa()  # Crea muros, monedas y Pac-Man
 
@@ -39,15 +38,24 @@ class Juego:
         # Cambiar solo direccion objetivo según tecla
         if keys[pygame.K_RIGHT]:
             self.pacman.direccion_objetivo = (1, 0)
+            self.direccion_actual = (1, 0)
         elif keys[pygame.K_LEFT]:
             self.pacman.direccion_objetivo = (-1, 0)
+            self.direccion_actual = (-1, 0)
         elif keys[pygame.K_UP]:
             self.pacman.direccion_objetivo = (0, -1)
+            self.direccion_actual = (0, -1)
         elif keys[pygame.K_DOWN]:
             self.pacman.direccion_objetivo = (0, 1)
+            self.direccion_actual = (0, 1)
+        #READY!
+        if self.mostrar_ready and self.direccion_actual !=(0,0):
+            self.mostrar_ready = False
+            self.pacman.direccion = self.direccion_actual
 
-        # Mover Pacman pasando grupo de muros para colision
-        self.pacman.mover(self.muro_grupo)
+        if not self.mostrar_ready:
+            self.pacman.mover(self.muro_grupo)   # Mover Pacman pasando grupo de muros para colision
+
 
         # Mover fantasmas
         for fantasma in self.fantasmas_group:
@@ -60,7 +68,14 @@ class Juego:
 
         # Colisión con fantasmas
         if pygame.sprite.spritecollide(self.pacman, self.fantasmas_group, False):
-            print("¡Has sido atrapado por el fantasma!")
+            self.vidas -= 1
+            print(f"¡Te ha atrapado un fantasma! Vidas restantes: {self.vidas}")
+            pygame.time.delay(1500)
+            if self.vidas <= 0:
+                print("GAME OVER")
+                self.running = False
+            else:
+                self.reiniciar_pacman()
 
     def eventos(self):
         for event in pygame.event.get():
@@ -93,6 +108,25 @@ class Juego:
                     self.pacman = pacman(pac_x, pac_y)
                     self.pacman_group = pygame.sprite.Group(self.pacman)
 
+    def reiniciar_pacman(self):
+        for y, fila in enumerate(self.datos):
+            for x, celda in enumerate(fila):
+                if celda == "P":
+                    # Posición centrada en el centro de la celda
+                    pac_x = x * self.tile_size + self.tile_size // 2
+                    pac_y = y * self.tile_size + self.tile_size // 2
+
+                    self.pacman.x = pac_x - self.pacman.rect.width // 2
+                    self.pacman.y = pac_y - self.pacman.rect.height // 2
+                    self.pacman.rect.topleft = (self.pacman.x, self.pacman.y)
+                    self.pacman.direccion_actual = (0, 0)
+                    # Reiniciar movimiento
+                    self.pacman.direccion_actual = (0, 0)
+                    if hasattr(self.pacman, "detener"):
+                        self.pacman.detener()
+                    return
+
+
     def draw(self):
         self.ventana.blit(self.mapa_surface, (0, 0))
 
@@ -109,9 +143,30 @@ class Juego:
         self.pacman.draw(self.ventana)
 
         # Mostrar puntuación
+        self.fuente = pygame.font.SysFont("Consolas", 19)  # si es una fuente del sistema
         texto = self.fuente.render(f"SCORE: {self.puntuacion}", True, WHITE)
         self.ventana.blit(texto, (10, 10))
 
+        # Mostrar Vidas
+        texto_vidas = self.fuente.render("", True, WHITE)
+        self.ventana.blit(texto_vidas, (SCREEN_WIDTH - 130, 10))
+
+        # Dibujar mini Pac-Man (rectángulos amarillos)
+        for i in range(self.vidas):
+            x = SCREEN_WIDTH - 60 + i * 15  # posición horizontal
+            y = 12  # posición vertical
+            pygame.draw.rect(self.ventana, YELLOW, (x, y, 10, 10))  # mini rectángulo
+
+        #Dibujar READY! en las XXXXX
+        if self.mostrar_ready:
+            ready_text = self.fuente.render("R E A D Y !", True, Rojo)
+
+            # Posicionar READY! centrado sobre las XXXXX (fila 18, columnas 11–15 aprox.)
+            ready_x = tile_size * 13.5  # Columna del medio de las XXXXX
+            ready_y = tile_size * 18.5  # Fila donde están las XXXXX
+
+            text_rect = ready_text.get_rect(center=(ready_x, ready_y))
+            self.ventana.blit(ready_text, text_rect)
         pygame.display.flip()
 
     def run(self):
@@ -120,6 +175,7 @@ class Juego:
             self.update()
             self.draw()
             self.clock.tick(60)
+
 
 
 def main():
