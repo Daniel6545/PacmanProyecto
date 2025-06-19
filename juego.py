@@ -151,11 +151,14 @@ class Juego:
         texto_vidas = self.fuente.render("", True, WHITE)
         self.ventana.blit(texto_vidas, (SCREEN_WIDTH - 130, 10))
 
-        # Dibujar mini Pac-Man (rectángulos amarillos)
+        # Dibujar mini Pac-Man (Vidas)
+        sprite_vida = pygame.transform.scale(self.pacman.imagenes[(1, 0)][0],(20, 20))  # Escalar imagen derecha pequeña
+
         for i in range(self.vidas):
-            x = SCREEN_WIDTH - 60 + i * 15  # posición horizontal
-            y = 12  # posición vertical
-            pygame.draw.rect(self.ventana, YELLOW, (x, y, 10, 10))  # mini rectángulo
+            x = SCREEN_WIDTH - 60 + i * 20  # separa las imágenes un poco más para que no se monten
+            y = 10  # posición vertical
+            self.ventana.blit(sprite_vida, (x, y))
+
 
         #Dibujar READY! en las XXXXX
         if self.mostrar_ready:
