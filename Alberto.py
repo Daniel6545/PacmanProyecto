@@ -3,15 +3,15 @@ import math
 from pygame.sprite import Sprite
 from Config import *
 
-class Blinky(Sprite):
+class alberto(Sprite):
     def __init__(self, muros_grupo, x_inicial, y_inicial):
         super().__init__()
         self.x = x_inicial
         self.y = y_inicial
         self.direction = 0
         self.color = Rojo
-        self.speed = blinky_speed
-        self.scatter_target = scatter_target
+        self.speed = Alberto_speed
+        self.scatter_target = scatter_targetA
         self.mode = "chase"
         self.directions = directions
         self.muros_grupo = muros_grupo
@@ -90,7 +90,7 @@ class Blinky(Sprite):
 
     def actualizar_turns(self, muros_group):
         self.rect.center = (self.x, self.y)
-        # Chequear colisión probando mover Blinky un paso en cada dirección
+        # Chequear colisión probando mover Fantasma un paso en cada dirección
         self.turns = [False, False, False, False]
         step = self.speed  # o un valor pequeño
 
@@ -113,6 +113,7 @@ class Blinky(Sprite):
         self.rect.y += step
         self.turns[3] = not pygame.sprite.spritecollideany(self, muros_group)
         self.rect.y -= step
+
     def draw(self, screen):
         """Dibuja al fantasma en la pantalla."""
         pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), 7)

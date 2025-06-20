@@ -5,7 +5,9 @@ from Config import *
 from Pacman import pacman
 from Pared import Muro
 from Coin import Coin
-from Blinky import Blinky
+from Alberto import alberto
+from Oscar import oscar
+from Juan import juan
 
 
 class Juego:
@@ -58,11 +60,21 @@ class Juego:
                     pac_y = y * self.tile_size + self.tile_size // 2
                     self.pacman = pacman(pac_x, pac_y)
                     self.pacman_group = pygame.sprite.Group(self.pacman)
-                elif celda == "F":
-                    blinky_x = x * self.tile_size + self.tile_size // 2
-                    blinky_y = y * self.tile_size + self.tile_size // 2
-                    self.blinky = Blinky(self.muro_grupo, blinky_x, blinky_y)
-                    self.fantasmas_group.add(self.blinky)
+                elif celda == "A":
+                    alberto_x = x * self.tile_size + self.tile_size // 2
+                    alberto_y = y * self.tile_size + self.tile_size // 2
+                    self.alberto = alberto(self.muro_grupo, alberto_x, alberto_y)
+                    self.fantasmas_group.add(self.alberto)
+                elif celda == "O":
+                    oscar_x = x * self.tile_size + self.tile_size // 2
+                    oscar_y = y * self.tile_size + self.tile_size // 2
+                    self.oscar = oscar(self.muro_grupo, oscar_x, oscar_y)
+                    self.fantasmas_group.add(self.oscar)
+                elif celda == "J":
+                    juan_x = x * self.tile_size + self.tile_size // 2
+                    juan_y = y * self.tile_size + self.tile_size // 2
+                    self.juan = juan(self.muro_grupo, juan_x, juan_y)
+                    self.fantasmas_group.add(self.juan)
     def update(self):
         keys = pygame.key.get_pressed()
 
@@ -106,6 +118,7 @@ class Juego:
                 self.running = False
             else:
                 self.reiniciar_pacman()
+                self.reiniciar_Fantasmas()
 
     def eventos(self):
         for event in pygame.event.get():
@@ -128,7 +141,29 @@ class Juego:
                     self.pacman.direccion_actual = (0, 0)
                     if hasattr(self.pacman, "detener"):
                         self.pacman.detener()
-                    return
+                        return
+
+    def reiniciar_Fantasmas(self):
+        for y, fila in enumerate(self.datos):
+            for x, celda in enumerate(fila):
+                cx = x * self.tile_size + self.tile_size // 2
+                cy = y * self.tile_size + self.tile_size // 2
+
+                if celda == "A" and hasattr(self, "alberto"):
+                    self.alberto.x = cx
+                    self.alberto.y = cy
+                    self.alberto.rect.topleft = (self.alberto.x, self.alberto.y)
+                    self.alberto.direccion_actual = (0, 0)
+                if celda == "O" and hasattr(self, "oscar"):
+                    self.oscar.x = cx
+                    self.oscar.y = cy
+                    self.oscar.rect.topleft = (self.oscar.x, self.oscar.y)
+                    self.oscar.direccion_actual = (0, 0)
+                if celda == "J" and hasattr(self, "juan"):
+                    self.juan.x = cx
+                    self.juan.y = cy
+                    self.juan.rect.topleft = (self.juan.x, self.juan.y)
+                    self.juan.direccion_actual = (0, 0)
 
 
     def draw(self):

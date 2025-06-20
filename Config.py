@@ -4,15 +4,20 @@ SCREEN_HEIGHT = 504
 tamaño = 21
 tamaño_pacman = 20  # o el tamaño que prefieras, menor que 21
 tamaño_fant = 19
-Pac_Vel= 1.75
-blinky_speed= 1.3
+Pac_Vel= 1.6
+Alberto_speed= 1.4
+Juan_speed = 1.3
+Oscar_speed = 1
 directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
-scatter_target = [SCREEN_WIDTH - 30, 30]
+scatter_targetA = [SCREEN_WIDTH - 30, 30]
+scatter_targetO = [30, 30]
+scatter_targetJ = [SCREEN_WIDTH // 2, SCREEN_HEIGHT - 30]
 BLACK= (0,0,0)
 WHITE=(255,255,255)
 YELLOW=(255,255,0) #color pacman
 Rojo=(255, 0, 0)
 Dorado=(255, 215, 0)
+Verde=(0,255,0)
 tile_size=21
 colores_paredes = {
             '1': (0, 0, 255),  # Azul
@@ -37,7 +42,7 @@ datos = [
     "X010S10201103011044401S010X",
     "1000100000000B0000000010001",
     "1010101011011x1101101010101",
-    "100000001101FFF101100000001",
+    "100000001101JOA101100000001",
     "101110101101111101101011101",
     "10000010100XXXXX00101000001",
     "101110000011111110000011101",
