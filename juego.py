@@ -18,9 +18,11 @@ class Juego:
         self.colores_paredes = colores_paredes
 
         self.running = True
+
+        self.blinky = Blinky()
+        self.fantasmas_group = pygame.sprite.Group(self.blinky)
+
         self.muro_grupo = pygame.sprite.Group()
-
-
 
         self.clock = pygame.time.Clock()
         self.fuente = pygame.font.SysFont("Calibri", 20)
@@ -60,7 +62,6 @@ class Juego:
         if pygame.sprite.spritecollide(self.pacman, self.fantasmas_group, False):
             print("¡Has sido atrapado por el fantasma!")
 
-
     def eventos(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -91,11 +92,6 @@ class Juego:
                     pac_y = y * self.tile_size + self.tile_size // 2
                     self.pacman = pacman(pac_x, pac_y)
                     self.pacman_group = pygame.sprite.Group(self.pacman)
-                elif celda == "B":
-                    blink_x = x * self.tile_size + self.tile_size // 2
-                    blink_y = y * self.tile_size + self.tile_size // 2
-                    self.blinky = Blinky(self.muro_grupo, blink_x, blink_y)
-                    self.fantasmas_group = pygame.sprite.Group(self.blinky)
 
     def draw(self):
         self.ventana.blit(self.mapa_surface, (0, 0))
