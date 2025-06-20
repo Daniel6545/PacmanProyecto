@@ -35,6 +35,7 @@ class Juego:
         self.mapa_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
 
         self.crearmapa()
+
     def crearmapa(self):
         for y, fila in enumerate(self.datos):
             for x, celda in enumerate(fila):
@@ -75,6 +76,7 @@ class Juego:
                     juan_y = y * self.tile_size + self.tile_size // 2
                     self.juan = juan(self.muro_grupo, juan_x, juan_y)
                     self.fantasmas_group.add(self.juan)
+
     def update(self):
         keys = pygame.key.get_pressed()
 
@@ -93,11 +95,10 @@ class Juego:
 
         if self.mostrar_ready and self.direccion_actual != (0, 0):
             self.mostrar_ready = False
-            self.pacman.direccion = self.direccion_actual
+            self.pacman.direccion_actual = self.direccion_actual
 
         if not self.mostrar_ready:
             self.pacman.mover(self.muro_grupo)
-
 
         # Mover fantasmas
         for fantasma in self.fantasmas_group:
@@ -108,17 +109,19 @@ class Juego:
             self.puntuacion += 10
             print(f"Puntuación: {self.puntuacion}")
 
-        # Colisión con fantasmas
-        if pygame.sprite.spritecollide(self.pacman, self.fantasmas_group, False):
-            self.vidas -= 1
-            print(f"¡Te ha atrapado un fantasma! Vidas restantes: {self.vidas}")
-            pygame.time.delay(1500)
-            if self.vidas <= 0:
-                print("GAME OVER")
-                self.running = False
-            else:
-                self.reiniciar_pacman()
-                self.reiniciar_Fantasmas()
+        #Colision con fantasmas
+        if pygame.sprite.spritecollide(self.pacman,self.fantasmas_group, False):
+                self.vidas -= 1
+                print(f"¡Te ha atrapado un fantasma! Vidas restantes: {self.vidas}")
+                pygame.time.delay(1500)
+                if self.vidas <= 0:
+                    print("GAME OVER")
+                    self.running = False
+                else:
+                    self.reiniciar_pacman()
+                    self.reiniciar_Fantasmas()
+
+
 
     def eventos(self):
         for event in pygame.event.get():
@@ -129,7 +132,6 @@ class Juego:
         for y, fila in enumerate(self.datos):
             for x, celda in enumerate(fila):
                 if celda == "P":
-                    # Posición centrada en el centro de la celda
                     pac_x = x * self.tile_size + self.tile_size // 2
                     pac_y = y * self.tile_size + self.tile_size // 2
 
@@ -137,11 +139,10 @@ class Juego:
                     self.pacman.y = pac_y - self.pacman.rect.height // 2
                     self.pacman.rect.topleft = (self.pacman.x, self.pacman.y)
                     self.pacman.direccion_actual = (0, 0)
-                    # Reiniciar movimiento
-                    self.pacman.direccion_actual = (0, 0)
+                    self.pacman.direccion_objetivo = (0, 0)
                     if hasattr(self.pacman, "detener"):
                         self.pacman.detener()
-                        return
+                    return
 
     def reiniciar_Fantasmas(self):
         for y, fila in enumerate(self.datos):
@@ -165,7 +166,6 @@ class Juego:
                     self.juan.rect.topleft = (self.juan.x, self.juan.y)
                     self.juan.direccion_actual = (0, 0)
 
-
     def draw(self):
         self.ventana.blit(self.mapa_surface, (0, 0))
 
@@ -175,7 +175,7 @@ class Juego:
         # Dibujar fantasmas
         for fantasma in self.fantasmas_group:
             fantasma.draw(self.ventana)
-        #Dibujar muros
+        # Dibujar muros
         self.muro_grupo.draw(self.ventana)
 
         # Dibujar Pac-Man
@@ -202,12 +202,12 @@ class Juego:
         if self.mostrar_ready:
             ready_text = self.fuente.render("R E A D Y !", True, Rojo)
 
-            # Posicionar READY! centrado sobre las XXXXX (fila 18, columnas 11–15 aprox.)
             ready_x = tile_size * 13.5  # Columna del medio de las XXXXX
             ready_y = tile_size * 18.5  # Fila donde están las XXXXX
 
             text_rect = ready_text.get_rect(center=(ready_x, ready_y))
             self.ventana.blit(ready_text, text_rect)
+
         pygame.display.flip()
 
     def run(self):

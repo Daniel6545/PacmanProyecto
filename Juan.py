@@ -2,6 +2,7 @@ import pygame
 import math
 from pygame.sprite import Sprite
 from Config import *
+import os
 
 class juan(Sprite):
     def __init__(self, muros_grupo, x_inicial, y_inicial):
@@ -9,33 +10,46 @@ class juan(Sprite):
         self.x = x_inicial
         self.y = y_inicial
         self.direction = 0
-        self.color = Verde
-        self.speed = Juan_speed
-        self.scatter_target = scatter_targetO
+        self.speed = Juan_speed  # Define en Config.py
+        self.scatter_target = scatter_targetJ  # Define en Config.py
         self.mode = "chase"
-        self.directions = directions
         self.muros_grupo = muros_grupo
+
         self.rect = pygame.Rect(
             self.x - tamaño // 2,
             self.y - tamaño // 2,
             tamaño,
             tamaño
         )
-        self.jaula_limite_y = self.y - 2 * tamaño
+
         self.mode_timer = 0
         self.mode_duration = {
-            "chase": 30000,
-            "scatter": 5000
+            "chase": 20000,
+            "scatter": 7000
         }
 
-    def distance(self, pos1, pos2):
-        """Calcula la distancia euclidiana entre dos puntos."""
-        return math.sqrt((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2)
+        self.imagenes = {}
+        direccion_rutas = {
+            (1, 0): ["JuanDerecha.png", "JuanDerecha2.png"],
+            (-1, 0): ["JuanIzquierda.png", "JuanIzquierda2.png"],
+            (0, -1): ["JuanArriba.png", "JuanArriba2.png"],
+            (0, 1): ["JuanAbajo.png", "JuanAbajo2.png"],
+            (0, 0): ["JuanDerecha.png"],
+        }
+        for direccion, archivos in direccion_rutas.items():
+            lista_imagenes = []
+            for archivo in archivos:
+                imagen = pygame.image.load(os.path.join("Sprites", archivo)).convert_alpha()
+                imagen = pygame.transform.scale(imagen, (tamaño_fant, tamaño_fant))
+                lista_imagenes.append(imagen)
+            self.imagenes[direccion] = lista_imagenes
+
+        self.anim_frame = 0
+        self.anim_speed = 10
+        self.anim_counter = 0
 
     def update_mode(self):
-        """Alterna entre modos chase y scatter basado en temporizador."""
         current_time = pygame.time.get_ticks()
-
         if self.mode == "chase" and current_time - self.mode_timer >= self.mode_duration["chase"]:
             self.mode = "scatter"
             self.mode_timer = current_time
@@ -46,11 +60,12 @@ class juan(Sprite):
     def move(self, pacman_pos):
         self.update_mode()
         self.target = pacman_pos if self.mode == "chase" else self.scatter_target
+
         direction_vectors = {
-            0: (1, 0),  # derecha
-            1: (-1, 0),  # izquierda
-            2: (0, -1),  # arriba
-            3: (0, 1)  # abajo
+            0: (1, 0),
+            1: (-1, 0),
+            2: (0, -1),
+            3: (0, 1)
         }
 
         self.actualizar_turns(self.muros_grupo)
@@ -59,15 +74,9 @@ class juan(Sprite):
 
         if posibles_dirs:
             distancias = []
-            direccion_opuesta = {
-                0: 1,
-                1: 0,
-                2: 3,
-                3: 2
-            }
+            direccion_opuesta = {0: 1, 1: 0, 2: 3, 3: 2}
 
             for d in posibles_dirs:
-                # Evitar girar 180º a menos que sea la única opción
                 if d == direccion_opuesta[self.direction] and len(posibles_dirs) > 1:
                     continue
                 dx, dy = direction_vectors[d]
@@ -79,41 +88,51 @@ class juan(Sprite):
             if distancias:
                 distancias.sort(key=lambda x: x[0])
                 self.direction = distancias[0][1]
-        # Mover en la dirección elegida
+
         if self.turns[self.direction]:
             dx, dy = direction_vectors[self.direction]
             self.x += dx * self.speed
             self.y += dy * self.speed
 
         self.rect.center = (self.x, self.y)
+
+        self.anim_counter += 1
+        if self.anim_counter >= self.anim_speed:
+            self.anim_counter = 0
+            dir_vector = direction_vectors[self.direction]
+            self.anim_frame = (self.anim_frame + 1) % len(self.imagenes[dir_vector])
+
         return self.x, self.y, self.direction
 
     def actualizar_turns(self, muros_group):
         self.rect.center = (self.x, self.y)
-        # Chequear colisión probando mover Blinky un paso en cada dirección
         self.turns = [False, False, False, False]
-        step = self.speed  # o un valor pequeño
+        step = self.speed
 
-        # derecha
         self.rect.x += step
         self.turns[0] = not pygame.sprite.spritecollideany(self, muros_group)
         self.rect.x -= step
 
-        # izquierda
         self.rect.x -= step
         self.turns[1] = not pygame.sprite.spritecollideany(self, muros_group)
         self.rect.x += step
 
-        # arriba
         self.rect.y -= step
         self.turns[2] = not pygame.sprite.spritecollideany(self, muros_group)
         self.rect.y += step
 
-        # abajo
         self.rect.y += step
         self.turns[3] = not pygame.sprite.spritecollideany(self, muros_group)
         self.rect.y -= step
 
     def draw(self, screen):
-        """Dibuja al fantasma en la pantalla."""
-        pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), 7)
+        direction_vectors = {
+            0: (1, 0),
+            1: (-1, 0),
+            2: (0, -1),
+            3: (0, 1)
+        }
+        dir_vector = direction_vectors[self.direction]
+        imagen_actual = self.imagenes[dir_vector][self.anim_frame]
+        rect_imagen = imagen_actual.get_rect(center=(int(self.x), int(self.y)))
+        screen.blit(imagen_actual, rect_imagen)

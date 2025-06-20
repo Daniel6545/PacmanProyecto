@@ -5,11 +5,36 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e96988c2-0388-42d4-a543-d44df32f107b" name="Changes" comment="Millores">
-      <change afterPath="$PROJECT_DIR$/Oscar.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Sprites/AlbertoAbajo.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Sprites/AlbertoAbajo2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Sprites/AlbertoArriba.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Sprites/AlbertoArriba2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Sprites/AlbertoDerecha.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Sprites/AlbertoDerecha2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Sprites/AlbertoIzquierda.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Sprites/AlbertoIzquierda2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Sprites/JuanAbajo.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Sprites/JuanAbajo2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Sprites/JuanArriba.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Sprites/JuanArriba2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Sprites/JuanDerecha.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Sprites/JuanDerecha2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Sprites/JuanIzquierda.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Sprites/JuanIzquierda2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Sprites/OscarAbajo.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Sprites/OscarAbajo2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Sprites/OscarArriba.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Sprites/OscarArriba2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Sprites/OscarDerecha.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Sprites/OscarDerecha2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Sprites/OscarIzquierda.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Sprites/OscarIzquierda2.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Blinky.py" beforeDir="false" afterPath="$PROJECT_DIR$/Alberto.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Alberto.py" beforeDir="false" afterPath="$PROJECT_DIR$/Alberto.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Config.py" beforeDir="false" afterPath="$PROJECT_DIR$/Config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Pinky.py" beforeDir="false" afterPath="$PROJECT_DIR$/Juan.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Juan.py" beforeDir="false" afterPath="$PROJECT_DIR$/Juan.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Oscar.py" beforeDir="false" afterPath="$PROJECT_DIR$/Oscar.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pacman.py" beforeDir="false" afterPath="$PROJECT_DIR$/Pacman.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/juego.py" beforeDir="false" afterPath="$PROJECT_DIR$/juego.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -27,7 +52,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="feature/Pinky" />
+        <entry key="$PROJECT_DIR$" value="feature/SpritesFantasmas" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -41,7 +66,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/Daniel6545/PacmanProyecto.git&quot;,
-    &quot;accountId&quot;: &quot;32cabc0d-f30f-4273-8b20-389383af54a9&quot;
+    &quot;accountId&quot;: &quot;86c94a3c-d2ec-4566-8356-4cede9a0e6cf&quot;
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
@@ -61,7 +86,7 @@
     "Python.juego.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "feature/Reiniciarfantasma",
+    "git-widget-placeholder": "feature/SpritesFantasmas2",
     "ignore.virus.scanning.warn.message": "true",
     "last_opened_file_path": "C:/Users/ruizs/PacmanProyecto",
     "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
@@ -70,6 +95,9 @@
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\ruizs\PacmanProyecto" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\annad\PycharmProjects\PacmanProyecto\Sprites" />
     </key>
   </component>
   <component name="RunManager" selected="Python.juego">
@@ -120,17 +148,17 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.juego" />
-        <item itemvalue="Python.MAIN" />
+        <item itemvalue="Python.juego" />
         <item itemvalue="Python.juego" />
         <item itemvalue="Python.MAIN" />
-        <item itemvalue="Python.MAIN" />
+        <item itemvalue="Python.juego" />
       </list>
     </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-a5bc9544c897-aa17d162503b-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-243.23654.177" />
+        <option value="bundled-python-sdk-fc1d50d2d915-aa17d162503b-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-243.24978.54" />
       </set>
     </attachedChunks>
   </component>
@@ -242,6 +270,6 @@
     <MESSAGE value="Cambio de ventana" />
     <MESSAGE value="Blinky añadido" />
     <MESSAGE value="Millores" />
-    <option name="LAST_COMMIT_MESSAGE" value="Millores" />
+    <option name="LAST_COMMIT_MESSAGE" value="" />
   </component>
 </project>
