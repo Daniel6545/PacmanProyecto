@@ -27,6 +27,18 @@ class alberto(Sprite):
             "chase": 20000,
             "scatter": 7000
         }
+        self.en_salida = True
+        self.salida_ruta = [
+            (self.x - tamaño, self.y),  # izquierda
+            (self.x - tamaño, self.y - tamaño),  # arriba
+            (self.x - tamaño, self.y - 2 * tamaño)  # arriba
+        ]
+        self.salida_paso = 0
+        self.salida_target = self.salida_ruta[0]
+        # Temporizador de retardo para iniciar salida
+        self.delay_inicio = 1000  # milisegundos
+        self.tiempo_creacion = pygame.time.get_ticks()
+        self.puede_salir = False
 
     def distance(self, pos1, pos2):
         """Calcula la distancia euclidiana entre dos puntos."""
@@ -43,7 +55,40 @@ class alberto(Sprite):
             self.mode = "chase"
             self.mode_timer = current_time
 
-    def move(self, pacman_pos):
+    def move(self, pacman_pos, puertas_group):
+        if not self.puede_salir:
+            tiempo_actual = pygame.time.get_ticks()
+            if tiempo_actual - self.tiempo_creacion >= self.delay_inicio:
+                self.puede_salir = True
+            else:
+                return  # Aún no se mueve
+        if self.en_salida:
+            target_x, target_y = self.salida_target
+
+            # Vector hacia el objetivo
+            dx = target_x - self.x
+            dy = target_y - self.y
+
+            distancia = math.hypot(dx, dy)
+
+            # Si está cerca del objetivo, avanzar al siguiente paso
+            if distancia < self.speed:
+                self.x, self.y = target_x, target_y
+                self.salida_paso += 1
+                if self.salida_paso < len(self.salida_ruta):
+                    self.salida_target = self.salida_ruta[self.salida_paso]
+                else:
+                    self.en_salida = False
+                    self.mode_timer = pygame.time.get_ticks()
+            else:
+                # Movimiento normalizado hacia el objetivo
+                if distancia != 0:
+                    self.x += self.speed * dx / distancia
+                    self.y += self.speed * dy / distancia
+
+            self.rect.center = (self.x, self.y)
+            return self.x, self.y, self.direction
+
         self.update_mode()
         self.target = pacman_pos if self.mode == "chase" else self.scatter_target
         direction_vectors = {
@@ -70,7 +115,21 @@ class alberto(Sprite):
                 # Evitar girar 180º a menos que sea la única opción
                 if d == direccion_opuesta[self.direction] and len(posibles_dirs) > 1:
                     continue
+
                 dx, dy = direction_vectors[d]
+
+                # Verificar si hay una puerta bloqueando esta dirección
+                if puertas_group:
+                    next_rect = self.rect.copy()
+                    next_rect.center = (self.x + dx * self.speed, self.y + dy * self.speed)
+                    bloqueado = False
+                    for puerta in puertas_group:
+                        if next_rect.colliderect(puerta.rect) and not puerta.permite_paso((dx, dy)):
+                            bloqueado = True
+                            break
+                    if bloqueado:
+                        continue  # Saltar esta dirección si la puerta no permite pasar
+
                 nueva_x = self.x + dx * self.speed
                 nueva_y = self.y + dy * self.speed
                 distancia = math.hypot(self.target[0] - nueva_x, self.target[1] - nueva_y)
@@ -82,6 +141,15 @@ class alberto(Sprite):
         # Mover en la dirección elegida
         if self.turns[self.direction]:
             dx, dy = direction_vectors[self.direction]
+
+            if puertas_group:
+                next_rect = self.rect.copy()
+                next_rect.center = (self.x + dx * self.speed, self.y + dy * self.speed)
+                for puerta in puertas_group:
+                    if next_rect.colliderect(puerta.rect):
+                        if not puerta.permite_paso((dx, dy)):
+                            return self.x, self.y, self.direction  # Bloqueado por la puerta
+
             self.x += dx * self.speed
             self.y += dy * self.speed
 

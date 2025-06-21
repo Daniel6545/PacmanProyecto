@@ -42,15 +42,26 @@ class pacman(Sprite):
 
         self.velocidad = Pac_Vel
 
-    def mover(self, muros):
+    def puede_moverse(self, nuevo_rect, puertas_group, muros, dx, dy):
+        # Verifica muros
+        if any(nuevo_rect.colliderect(muro.rect) for muro in muros):
+            return False
+        # Verifica puertas
+        for puerta in puertas_group:
+            if puerta.rect.colliderect(nuevo_rect):
+                if hasattr(puerta, "permite_paso") and not puerta.permite_paso((dx, dy)):
+                    return False
+        return True
+    def mover(self, muros, puertas_group):
         dx, dy = self.direccion_objetivo
-        rect_prueba = self.rect.copy()
-        rect_prueba.x += dx * self.velocidad
-        rect_prueba.y += dy * self.velocidad
+        if dx != 0 or dy != 0:
+            rect_prueba = self.rect.copy()
+            rect_prueba.x += dx * self.velocidad
+            rect_prueba.y += dy * self.velocidad
+            if self.puede_moverse(rect_prueba, puertas_group, muros, dx, dy):
+                self.direccion_actual = self.direccion_objetivo
 
-        # Cambiar dirección solo si no hay colisión en esa dirección
-        if not any(rect_prueba.colliderect(muro.rect) for muro in muros):
-            self.direccion_actual = self.direccion_objetivo
+        dx, dy = self.direccion_actual
 
         # Movimiento horizontal con chequeo de colisión
         dx, dy = self.direccion_actual
@@ -64,7 +75,7 @@ class pacman(Sprite):
         nueva_y = self.y + dy * self.velocidad
         rect_y = self.rect.copy()
         rect_y.y = int(nueva_y)
-        if not any(rect_y.colliderect(muro.rect) for muro in muros):
+        if self.puede_moverse(rect_y, puertas_group, muros, dx, dy):
             self.y = nueva_y
 
         # Teletransporte lateral para túneles
