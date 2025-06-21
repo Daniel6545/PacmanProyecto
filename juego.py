@@ -162,16 +162,20 @@ class Juego:
                     self.alberto.y = cy
                     self.alberto.rect.topleft = (self.alberto.x, self.alberto.y)
                     self.alberto.direccion_actual = (0, 0)
+                    self.alberto.salida_paso=0
                 if celda == "O" and hasattr(self, "oscar"):
                     self.oscar.x = cx
                     self.oscar.y = cy
                     self.oscar.rect.topleft = (self.oscar.x, self.oscar.y)
                     self.oscar.direccion_actual = (0, 0)
+                    self.oscar.salida_paso = 0
                 if celda == "J" and hasattr(self, "juan"):
                     self.juan.x = cx
                     self.juan.y = cy
                     self.juan.rect.topleft = (self.juan.x, self.juan.y)
                     self.juan.direccion_actual = (0, 0)
+                    self.juan.salida_paso = 0
+
 
 
     def draw(self):

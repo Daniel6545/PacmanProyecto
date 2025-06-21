@@ -5,12 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e96988c2-0388-42d4-a543-d44df32f107b" name="Changes" comment="Millores + implementacio del fantasmas">
-      <change afterPath="$PROJECT_DIR$/Puerta.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Alberto.py" beforeDir="false" afterPath="$PROJECT_DIR$/Alberto.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Juan.py" beforeDir="false" afterPath="$PROJECT_DIR$/Juan.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscar.py" beforeDir="false" afterPath="$PROJECT_DIR$/Oscar.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Pacman.py" beforeDir="false" afterPath="$PROJECT_DIR$/Pacman.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/juego.py" beforeDir="false" afterPath="$PROJECT_DIR$/juego.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -232,7 +227,15 @@
       <option name="project" value="LOCAL" />
       <updated>1750414300050</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Millores + implementacio del fantasmas">
+      <option name="closed" value="true" />
+      <created>1750496512657</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1750496512657</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
