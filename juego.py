@@ -8,7 +8,6 @@ from Coin import Coin
 from Alberto import alberto
 from Oscar import oscar
 from Juan import juan
-from Puerta import puerta
 
 
 class Juego:
@@ -25,7 +24,6 @@ class Juego:
         self.muro_grupo = pygame.sprite.Group()
         self.coin_group = pygame.sprite.Group()
         self.fantasmas_group = pygame.sprite.Group()
-        self.puertas_group = pygame.sprite.Group()
 
         self.clock = pygame.time.Clock()
         self.fuente = pygame.font.SysFont("Calibri", 20)
@@ -50,8 +48,8 @@ class Juego:
                 elif celda == "0":
                     cx = x * self.tile_size + self.tile_size // 2
                     cy = y * self.tile_size + self.tile_size // 2
-                    self.moneda = Coin(cx, cy)
-                    self.coin_group.add(self.moneda)
+                    moneda = Coin(cx, cy)
+                    self.coin_group.add(moneda)
 
                 elif celda == "S":
                     pygame.draw.circle(self.mapa_surface, Dorado,
@@ -60,7 +58,6 @@ class Juego:
                 elif celda == "P":
                     pac_x = x * self.tile_size + self.tile_size // 2
                     pac_y = y * self.tile_size + self.tile_size // 2
-
                     self.pacman = pacman(pac_x, pac_y)
                     self.pacman_group = pygame.sprite.Group(self.pacman)
                 elif celda == "A":
@@ -78,9 +75,6 @@ class Juego:
                     juan_y = y * self.tile_size + self.tile_size // 2
                     self.juan = juan(self.muro_grupo, juan_x, juan_y)
                     self.fantasmas_group.add(self.juan)
-                elif celda =="x":
-                    self.puerta = puerta(pos[0], pos[1], self.tile_size)
-                    self.puertas_group.add(self.puerta)
     def update(self):
         keys = pygame.key.get_pressed()
 
@@ -102,14 +96,12 @@ class Juego:
             self.pacman.direccion = self.direccion_actual
 
         if not self.mostrar_ready:
-            self.pacman.mover(self.muro_grupo, self.puertas_group)
-
+            self.pacman.mover(self.muro_grupo)
 
 
         # Mover fantasmas
-
         for fantasma in self.fantasmas_group:
-            fantasma.move((self.pacman.x, self.pacman.y), self.puertas_group)
+            fantasma.move((self.pacman.x, self.pacman.y))
 
         # Colisiones monedas
         if pygame.sprite.spritecollide(self.pacman, self.coin_group, True):
@@ -162,20 +154,16 @@ class Juego:
                     self.alberto.y = cy
                     self.alberto.rect.topleft = (self.alberto.x, self.alberto.y)
                     self.alberto.direccion_actual = (0, 0)
-                    self.alberto.salida_paso=0
                 if celda == "O" and hasattr(self, "oscar"):
                     self.oscar.x = cx
                     self.oscar.y = cy
                     self.oscar.rect.topleft = (self.oscar.x, self.oscar.y)
                     self.oscar.direccion_actual = (0, 0)
-                    self.oscar.salida_paso = 0
                 if celda == "J" and hasattr(self, "juan"):
                     self.juan.x = cx
                     self.juan.y = cy
                     self.juan.rect.topleft = (self.juan.x, self.juan.y)
                     self.juan.direccion_actual = (0, 0)
-                    self.juan.salida_paso = 0
-
 
 
     def draw(self):
@@ -220,7 +208,6 @@ class Juego:
 
             text_rect = ready_text.get_rect(center=(ready_x, ready_y))
             self.ventana.blit(ready_text, text_rect)
-        self.puerta.draw(self.ventana)
         pygame.display.flip()
 
     def run(self):
