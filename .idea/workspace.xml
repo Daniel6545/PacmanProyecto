@@ -4,12 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e96988c2-0388-42d4-a543-d44df32f107b" name="Changes" comment="Millores">
-      <change afterPath="$PROJECT_DIR$/Oscar.py" afterDir="false" />
+    <list default="true" id="e96988c2-0388-42d4-a543-d44df32f107b" name="Changes" comment="Millores + implementacio del fantasmas">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Blinky.py" beforeDir="false" afterPath="$PROJECT_DIR$/Alberto.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Config.py" beforeDir="false" afterPath="$PROJECT_DIR$/Config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Pinky.py" beforeDir="false" afterPath="$PROJECT_DIR$/Juan.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/juego.py" beforeDir="false" afterPath="$PROJECT_DIR$/juego.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -55,18 +51,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.MAIN.executor": "Run",
-    "Python.juego.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "feature/Reiniciarfantasma",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/ruizs/PacmanProyecto",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.MAIN.executor&quot;: &quot;Run&quot;,
+    &quot;Python.juego.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/FantasmaPuerta&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/ruizs/PacmanProyecto&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\ruizs\PacmanProyecto" />
@@ -223,7 +219,23 @@
       <option name="project" value="LOCAL" />
       <updated>1750409583912</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Millores + implementacio del fantasmas">
+      <option name="closed" value="true" />
+      <created>1750414300050</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1750414300050</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Millores + implementacio del fantasmas">
+      <option name="closed" value="true" />
+      <created>1750496512657</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1750496512657</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -242,6 +254,7 @@
     <MESSAGE value="Cambio de ventana" />
     <MESSAGE value="Blinky añadido" />
     <MESSAGE value="Millores" />
-    <option name="LAST_COMMIT_MESSAGE" value="Millores" />
+    <MESSAGE value="Millores + implementacio del fantasmas" />
+    <option name="LAST_COMMIT_MESSAGE" value="Millores + implementacio del fantasmas" />
   </component>
 </project>
