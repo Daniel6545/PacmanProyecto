@@ -2,6 +2,7 @@ import pygame
 import math
 from pygame.sprite import Sprite
 from Config import *
+import os
 
 class oscar(Sprite):
     def __init__(self, muros_grupo, x_inicial, y_inicial):
@@ -27,7 +28,37 @@ class oscar(Sprite):
             "chase": 10000,
             "scatter": 15000
         }
+        self.en_salida = True
+        self.salida_ruta = [
+            (self.x, self.y - tamaño),  # arriba
+            (self.x, self.y - 2 * tamaño)  # arriba
+        ]
+        self.salida_paso = 0
+        self.salida_target = self.salida_ruta[0]
+        # Temporizador de retardo para iniciar salida
+        self.delay_inicio = 5000  # milisegundos
+        self.tiempo_creacion = pygame.time.get_ticks()
+        self.puede_salir = False
 
+        self.imagenes = {}
+        direccion_rutas = {
+            (1, 0): ["OscarDerecha.png", "OscarDerecha2.png"],
+            (-1, 0): ["OscarIzquierda.png", "OscarIzquierda2.png"],
+            (0, -1): ["OscarArriba.png", "OscarArriba2.png"],
+            (0, 1): ["OscarAbajo.png", "OscarAbajo2.png"],
+            (0, 0): ["OscarDerecha.png"]
+        }
+        for direccion, archivos in direccion_rutas.items():
+            lista_imagenes = []
+            for archivo in archivos:
+                imagen = pygame.image.load(os.path.join("Sprites", archivo)).convert_alpha()
+                imagen = pygame.transform.scale(imagen, (tamaño_fant, tamaño_fant))
+                lista_imagenes.append(imagen)
+            self.imagenes[direccion] = lista_imagenes
+
+        self.anim_frame = 0
+        self.anim_speed = 10
+        self.anim_counter = 0
     def distance(self, pos1, pos2):
         """Calcula la distancia euclidiana entre dos puntos."""
         return math.sqrt((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2)
@@ -43,7 +74,40 @@ class oscar(Sprite):
             self.mode = "chase"
             self.mode_timer = current_time
 
-    def move(self, pacman_pos):
+    def move(self, pacman_pos, puertas_group):
+        if not self.puede_salir:
+            tiempo_actual = pygame.time.get_ticks()
+            if tiempo_actual - self.tiempo_creacion >= self.delay_inicio:
+                self.puede_salir = True
+            else:
+                return  # Aún no se mueve
+        if self.en_salida:
+            target_x, target_y = self.salida_target
+
+            # Vector hacia el objetivo
+            dx = target_x - self.x
+            dy = target_y - self.y
+
+            distancia = math.hypot(dx, dy)
+
+            # Si está cerca del objetivo, avanzar al siguiente paso
+            if distancia < self.speed:
+                self.x, self.y = target_x, target_y
+                self.salida_paso += 1
+                if self.salida_paso < len(self.salida_ruta):
+                    self.salida_target = self.salida_ruta[self.salida_paso]
+                else:
+                    self.en_salida = False
+                    self.mode_timer = pygame.time.get_ticks()
+            else:
+                # Movimiento normalizado hacia el objetivo
+                if distancia != 0:
+                    self.x += self.speed * dx / distancia
+                    self.y += self.speed * dy / distancia
+
+            self.rect.center = (self.x, self.y)
+            return self.x, self.y, self.direction
+
         self.update_mode()
         self.target = pacman_pos if self.mode == "chase" else self.scatter_target
         direction_vectors = {
@@ -66,27 +130,60 @@ class oscar(Sprite):
                 3: 2
             }
 
-            for d in posibles_dirs:
-                # Evitar girar 180º a menos que sea la única opción
-                if d == direccion_opuesta[self.direction] and len(posibles_dirs) > 1:
-                    continue
-                dx, dy = direction_vectors[d]
-                nueva_x = self.x + dx * self.speed
-                nueva_y = self.y + dy * self.speed
-                distancia = math.hypot(self.target[0] - nueva_x, self.target[1] - nueva_y)
-                distancias.append((distancia, d))
+            if posibles_dirs:
+                distancias = []
+                direccion_opuesta = {0: 1, 1: 0, 2: 3, 3: 2}
 
-            if distancias:
-                distancias.sort(key=lambda x: x[0])
-                self.direction = distancias[0][1]
-        # Mover en la dirección elegida
-        if self.turns[self.direction]:
-            dx, dy = direction_vectors[self.direction]
-            self.x += dx * self.speed
-            self.y += dy * self.speed
+                for d in posibles_dirs:
+                    if d == direccion_opuesta[self.direction] and len(posibles_dirs) > 1:
+                        continue
 
-        self.rect.center = (self.x, self.y)
-        return self.x, self.y, self.direction
+                    dx, dy = direction_vectors[d]
+
+                    # Verificar si hay una puerta bloqueando esta dirección
+                    if puertas_group:
+                        next_rect = self.rect.copy()
+                        next_rect.center = (self.x + dx * self.speed, self.y + dy * self.speed)
+                        bloqueado = False
+                        for puerta in puertas_group:
+                            if next_rect.colliderect(puerta.rect) and not puerta.permite_paso((dx, dy)):
+                                bloqueado = True
+                                break
+                        if bloqueado:
+                            continue  # Saltar esta dirección si la puerta no permite pasar
+
+                    nueva_x = self.x + dx * self.speed
+                    nueva_y = self.y + dy * self.speed
+                    distancia = math.hypot(self.target[0] - nueva_x, self.target[1] - nueva_y)
+                    distancias.append((distancia, d))
+
+                if distancias:
+                    distancias.sort(key=lambda x: x[0])
+                    self.direction = distancias[0][1]
+
+            if self.turns[self.direction]:
+                dx, dy = direction_vectors[self.direction]
+
+                if puertas_group:
+                    next_rect = self.rect.copy()
+                    next_rect.center = (self.x + dx * self.speed, self.y + dy * self.speed)
+                    for puerta in puertas_group:
+                        if next_rect.colliderect(puerta.rect):
+                            if not puerta.permite_paso((dx, dy)):
+                                return self.x, self.y, self.direction  # Bloqueado por la puerta
+
+                self.x += dx * self.speed
+                self.y += dy * self.speed
+
+            self.rect.center = (self.x, self.y)
+
+            self.anim_counter += 1
+            if self.anim_counter >= self.anim_speed:
+                self.anim_counter = 0
+                dir_vector = direction_vectors[self.direction]
+                self.anim_frame = (self.anim_frame + 1) % len(self.imagenes[dir_vector])
+
+            return self.x, self.y, self.direction
 
     def actualizar_turns(self, muros_group):
         self.rect.center = (self.x, self.y)
@@ -115,5 +212,13 @@ class oscar(Sprite):
         self.rect.y -= step
 
     def draw(self, screen):
-        """Dibuja al fantasma en la pantalla."""
-        pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), 7)
+        direction_vectors = {
+            0: (1, 0),
+            1: (-1, 0),
+            2: (0, -1),
+            3: (0, 1)
+        }
+        dir_vector = direction_vectors[self.direction]
+        imagen_actual = self.imagenes[dir_vector][self.anim_frame]
+        rect_imagen = imagen_actual.get_rect(center=(int(self.x), int(self.y)))
+        screen.blit(imagen_actual, rect_imagen)

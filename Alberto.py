@@ -61,6 +61,7 @@ class alberto(Sprite):
         self.anim_speed = 10  # frames para cambiar la imagen
         self.anim_counter = 0
 
+
     def update_mode(self):
         current_time = pygame.time.get_ticks()
         if self.mode == "chase" and current_time - self.mode_timer >= self.mode_duration["chase"]:
