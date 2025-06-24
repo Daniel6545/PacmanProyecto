@@ -31,7 +31,7 @@ class Juego:
         self.puntuacion = 0
         self.vidas = 3  # vidas PacMan
         self.mostrar_ready = True
-
+        self.nivel=0
 
         self.mapa_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
 
@@ -65,17 +65,17 @@ class Juego:
                 elif celda == "A":
                     alberto_x = x * self.tile_size + self.tile_size // 2
                     alberto_y = y * self.tile_size + self.tile_size // 2
-                    self.alberto = alberto(self.muro_grupo, alberto_x, alberto_y)
+                    self.alberto = alberto(self.muro_grupo, alberto_x, alberto_y, self.nivel)
                     self.fantasmas_group.add(self.alberto)
                 elif celda == "O":
                     oscar_x = x * self.tile_size + self.tile_size // 2
                     oscar_y = y * self.tile_size + self.tile_size // 2
-                    self.oscar = oscar(self.muro_grupo, oscar_x, oscar_y)
+                    self.oscar = oscar(self.muro_grupo, oscar_x, oscar_y, self.nivel)
                     self.fantasmas_group.add(self.oscar)
                 elif celda == "J":
                     juan_x = x * self.tile_size + self.tile_size // 2
                     juan_y = y * self.tile_size + self.tile_size // 2
-                    self.juan = juan(self.muro_grupo, juan_x, juan_y)
+                    self.juan = juan(self.muro_grupo, juan_x, juan_y, self.nivel)
                     self.fantasmas_group.add(self.juan)
                 elif celda =="x":
                     self.puerta = puerta(pos[0], pos[1], self.tile_size)
@@ -102,18 +102,19 @@ class Juego:
 
         if not self.mostrar_ready:
             self.pacman.mover(self.muro_grupo, self.puertas_group)
+            for fantasma in self.fantasmas_group:
+                fantasma.move((self.pacman.x, self.pacman.y), self.puertas_group)
 
 
-
-        # Mover fantasmas
-
-        for fantasma in self.fantasmas_group:
-            fantasma.move((self.pacman.x, self.pacman.y), self.puertas_group)
 
         # Colisiones monedas
         if pygame.sprite.spritecollide(self.pacman, self.coin_group, True):
             self.puntuacion += 10
             print(f"Puntuación: {self.puntuacion}")
+            if len(self.coin_group) == 0:
+                pygame.time.delay(2000)
+                self.nivel += 0.05
+                self.reiniciar_nivel()
 
         # Colisión con fantasmas
         if pygame.sprite.spritecollide(self.pacman, self.fantasmas_group, False):
@@ -131,6 +132,18 @@ class Juego:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
+
+    def reiniciar_nivel(self):
+        # Reiniciar todos los grupos
+        self.muro_grupo.empty()
+        self.coin_group.empty()
+        self.fantasmas_group.empty()
+        self.puertas_group.empty()
+        self.mostrar_ready = True
+        self.direccion_actual = (0, 0)
+        self.crearmapa()
+
+
 
     def reiniciar_pacman(self):
         for y, fila in enumerate(self.datos):
@@ -171,8 +184,6 @@ class Juego:
                     self.juan.y = cy
                     self.juan.rect.topleft = (self.juan.x, self.juan.y)
                     self.juan.direccion_actual = (0, 0)
-
-
     def draw(self):
         self.ventana.blit(self.mapa_surface, (0, 0))
 

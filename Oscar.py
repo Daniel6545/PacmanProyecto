@@ -5,13 +5,13 @@ from Config import *
 import os
 
 class oscar(Sprite):
-    def __init__(self, muros_grupo, x_inicial, y_inicial):
+    def __init__(self, muros_grupo, x_inicial, y_inicial, nivel):
         super().__init__()
         self.x = x_inicial
         self.y = y_inicial
         self.direction = 0
         self.color = WHITE
-        self.speed = Oscar_speed
+        self.speed = Oscar_speed + nivel
         self.scatter_target = scatter_targetO
         self.mode = "chase"
         self.directions = directions

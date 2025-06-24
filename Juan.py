@@ -5,13 +5,13 @@ from Config import *
 import os
 
 class juan(Sprite):
-    def __init__(self, muros_grupo, x_inicial, y_inicial):
+    def __init__(self, muros_grupo, x_inicial, y_inicial, nivel):
         super().__init__()
         self.x = x_inicial
         self.y = y_inicial
         self.direction = 0
-        self.speed = Juan_speed  # Define en Config.py
-        self.scatter_target = scatter_targetJ  # Define en Config.py
+        self.speed = Juan_speed + nivel
+        self.scatter_target = scatter_targetJ
         self.mode = "chase"
         self.muros_grupo = muros_grupo
 
