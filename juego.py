@@ -8,7 +8,7 @@ from Alberto import alberto
 from Oscar import oscar
 from Juan import juan
 from Puerta import puerta
-
+from Superpoder import Superpoder
 
 class Juego:
     def __init__(self):
@@ -25,6 +25,7 @@ class Juego:
         self.coin_group = pygame.sprite.Group()
         self.fantasmas_group = pygame.sprite.Group()
         self.puertas_group = pygame.sprite.Group()
+        self.superpoder_group = pygame.sprite.Group()
 
         self.clock = pygame.time.Clock()
         self.fuente = pygame.font.SysFont("Calibri", 20)
@@ -34,6 +35,9 @@ class Juego:
         self.nivel=0
 
         self.mapa_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+
+        self.superpoder_activo = False
+        self.superpoder_tiempo = 0
 
         self.crearmapa()
     def crearmapa(self):
@@ -51,10 +55,6 @@ class Juego:
                     cy = y * self.tile_size + self.tile_size // 2
                     self.moneda = Coin(cx, cy)
                     self.coin_group.add(self.moneda)
-
-                elif celda == "S":
-                    pygame.draw.circle(self.mapa_surface, Dorado,
-                                       (pos[0] + self.tile_size // 2, pos[1] + self.tile_size // 2), 5)
 
                 elif celda == "P":
                     pac_x = x * self.tile_size + self.tile_size // 2
@@ -80,6 +80,11 @@ class Juego:
                 elif celda =="x":
                     self.puerta = puerta(pos[0], pos[1], self.tile_size)
                     self.puertas_group.add(self.puerta)
+                elif celda == "S":
+                    cx = x * self.tile_size + self.tile_size // 2
+                    cy = y * self.tile_size + self.tile_size // 2
+                    self.poder = Superpoder(cx, cy)
+                    self.superpoder_group.add(self.poder)
     def update(self):
         keys = pygame.key.get_pressed()
 
@@ -110,23 +115,39 @@ class Juego:
         # Colisiones monedas
         if pygame.sprite.spritecollide(self.pacman, self.coin_group, True):
             self.puntuacion += 10
-            print(f"Puntuación: {self.puntuacion}")
             if len(self.coin_group) == 0:
                 pygame.time.delay(2000)
                 self.nivel += 0.05
                 self.reiniciar_nivel()
 
         # Colisión con fantasmas
-        if pygame.sprite.spritecollide(self.pacman, self.fantasmas_group, False):
-            self.vidas -= 1
-            print(f"¡Te ha atrapado un fantasma! Vidas restantes: {self.vidas}")
-            pygame.time.delay(1500)
-            if self.vidas <= 0:
-                print("GAME OVER")
-                self.running = False
+        fantasmas_colision = pygame.sprite.spritecollide(self.pacman, self.fantasmas_group, False)
+        if fantasmas_colision:
+            if self.superpoder_activo:
+                for fantasma in fantasmas_colision:
+                    self.reiniciar_fantasma(fantasma)
             else:
-                self.reiniciar_pacman()
-                self.reiniciar_Fantasmas()
+                self.vidas -= 1
+                pygame.time.delay(1500)
+                if self.vidas <= 0:
+                    print("GAME OVER")
+                    self.running = False
+                else:
+                    self.reiniciar_pacman()
+                    self.reiniciar_Fantasmas()
+        # Superpoder recogido
+        if pygame.sprite.spritecollide(self.pacman, self.superpoder_group, True):
+            self.superpoder_activo = True
+            self.superpoder_tiempo = pygame.time.get_ticks()
+            for fantasma in self.fantasmas_group:
+                fantasma.activar_miedo()
+
+        if self.superpoder_activo:
+            tiempo_actual = pygame.time.get_ticks()
+            if tiempo_actual - self.superpoder_tiempo > 7000:
+                self.superpoder_activo = False
+                for fantasma in self.fantasmas_group:
+                    fantasma.desactivar_miedo()
 
     def eventos(self):
         for event in pygame.event.get():
@@ -139,6 +160,7 @@ class Juego:
         self.coin_group.empty()
         self.fantasmas_group.empty()
         self.puertas_group.empty()
+        self.superpoder_group.empty()
         self.mostrar_ready = True
         self.direccion_actual = (0, 0)
         self.crearmapa()
@@ -184,6 +206,27 @@ class Juego:
                     self.juan.y = cy
                     self.juan.rect.topleft = (self.juan.x, self.juan.y)
                     self.juan.direccion_actual = (0, 0)
+
+    def reiniciar_fantasma(self, fantasma):
+        fantasma.desactivar_miedo()
+        for y, fila in enumerate(self.datos):
+            for x, celda in enumerate(fila):
+                cx = x * self.tile_size + self.tile_size // 2
+                cy = y * self.tile_size + self.tile_size // 2
+
+                if celda == "A" and isinstance(fantasma, alberto):
+                    fantasma.x = cx
+                    fantasma.y = cy
+                elif celda == "O" and isinstance(fantasma, oscar):
+                    fantasma.x = cx
+                    fantasma.y = cy
+                elif celda == "J" and isinstance(fantasma, juan):
+                    fantasma.x = cx
+                    fantasma.y = cy
+
+                fantasma.rect.topleft = (fantasma.x, fantasma.y)
+                fantasma.direccion_actual = (0, 0)
+
     def draw(self):
         self.ventana.blit(self.mapa_surface, (0, 0))
 
@@ -191,6 +234,7 @@ class Juego:
         self.coin_group.draw(self.ventana)
 
         # Dibujar fantasmas
+
         for fantasma in self.fantasmas_group:
             fantasma.draw(self.ventana)
         #Dibujar muros
@@ -198,6 +242,8 @@ class Juego:
 
         # Dibujar Pac-Man
         self.pacman.draw(self.ventana)
+        #dibuja Superpoder
+        self.superpoder_group.draw(self.ventana)
 
         # Mostrar puntuación
         texto = self.fuente.render(f"SCORE: {self.puntuacion}", True, WHITE)

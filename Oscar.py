@@ -12,6 +12,7 @@ class oscar(Sprite):
         self.direction = 0
         self.color = WHITE
         self.speed = Oscar_speed + nivel
+        self.modo_miedo = False
         self.scatter_target = scatter_targetO
         self.mode = "chase"
         self.directions = directions
@@ -55,10 +56,16 @@ class oscar(Sprite):
                 imagen = pygame.transform.scale(imagen, (tamaño_fant, tamaño_fant))
                 lista_imagenes.append(imagen)
             self.imagenes[direccion] = lista_imagenes
-
+        imagen_miedo = pygame.image.load(os.path.join("Sprites", "FantasmaMiedo.png")).convert_alpha()
+        self.imagen_miedo = pygame.transform.scale(imagen_miedo, (tamaño_fant, tamaño_fant))
         self.anim_frame = 0
         self.anim_speed = 10
         self.anim_counter = 0
+
+        self.muerto = False
+        self.tiempo_muerte = 0
+        self.delay_reaparicion = 2000  # milisegundos (2 s)
+
     def distance(self, pos1, pos2):
         """Calcula la distancia euclidiana entre dos puntos."""
         return math.sqrt((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2)
@@ -74,7 +81,21 @@ class oscar(Sprite):
             self.mode = "chase"
             self.mode_timer = current_time
 
+    def activar_miedo(self):
+        self.modo_miedo = True
+        self.mode_timer = pygame.time.get_ticks()
+
+    def desactivar_miedo(self):
+        self.modo_miedo = False
+
     def move(self, pacman_pos, puertas_group):
+        # Teletransporte lateral para túneles
+        if self.rect.right < 0:
+            self.x = SCREEN_WIDTH
+        elif self.rect.left > SCREEN_WIDTH:
+            self.x = -self.rect.width
+
+        self.rect.topleft = (int(self.x), int(self.y))
         if not self.puede_salir:
             tiempo_actual = pygame.time.get_ticks()
             if tiempo_actual - self.tiempo_creacion >= self.delay_inicio:
@@ -109,7 +130,19 @@ class oscar(Sprite):
             return self.x, self.y, self.direction
 
         self.update_mode()
-        self.target = pacman_pos if self.mode == "chase" else self.scatter_target
+        if self.modo_miedo:
+            # Moverse en dirección opuesta a Pac-Man
+            dx = self.x - pacman_pos[0]
+            dy = self.y - pacman_pos[1]
+            distancia = math.hypot(dx, dy)
+            if distancia != 0:
+                self.target = (self.x + dx / distancia * 100, self.y + dy / distancia * 100)
+            else:
+                self.target = self.scatter_target
+        else:
+            self.target = pacman_pos if self.mode == "chase" else self.scatter_target
+
+
         direction_vectors = {
             0: (1, 0),  # derecha
             1: (-1, 0),  # izquierda
@@ -123,67 +156,60 @@ class oscar(Sprite):
 
         if posibles_dirs:
             distancias = []
-            direccion_opuesta = {
-                0: 1,
-                1: 0,
-                2: 3,
-                3: 2
-            }
+            direccion_opuesta = {0: 1, 1: 0, 2: 3, 3: 2}
 
-            if posibles_dirs:
-                distancias = []
-                direccion_opuesta = {0: 1, 1: 0, 2: 3, 3: 2}
+            for d in posibles_dirs:
+                if d == direccion_opuesta[self.direction] and len(posibles_dirs) > 1:
+                    continue
 
-                for d in posibles_dirs:
-                    if d == direccion_opuesta[self.direction] and len(posibles_dirs) > 1:
-                        continue
+                dx, dy = direction_vectors[d]
 
-                    dx, dy = direction_vectors[d]
-
-                    # Verificar si hay una puerta bloqueando esta dirección
-                    if puertas_group:
-                        next_rect = self.rect.copy()
-                        next_rect.center = (self.x + dx * self.speed, self.y + dy * self.speed)
-                        bloqueado = False
-                        for puerta in puertas_group:
-                            if next_rect.colliderect(puerta.rect) and not puerta.permite_paso((dx, dy)):
-                                bloqueado = True
-                                break
-                        if bloqueado:
-                            continue  # Saltar esta dirección si la puerta no permite pasar
-
-                    nueva_x = self.x + dx * self.speed
-                    nueva_y = self.y + dy * self.speed
-                    distancia = math.hypot(self.target[0] - nueva_x, self.target[1] - nueva_y)
-                    distancias.append((distancia, d))
-
-                if distancias:
-                    distancias.sort(key=lambda x: x[0])
-                    self.direction = distancias[0][1]
-
-            if self.turns[self.direction]:
-                dx, dy = direction_vectors[self.direction]
-
+                # Verificar si hay una puerta bloqueando esta dirección
                 if puertas_group:
                     next_rect = self.rect.copy()
                     next_rect.center = (self.x + dx * self.speed, self.y + dy * self.speed)
+                    bloqueado = False
                     for puerta in puertas_group:
-                        if next_rect.colliderect(puerta.rect):
-                            if not puerta.permite_paso((dx, dy)):
-                                return self.x, self.y, self.direction  # Bloqueado por la puerta
+                        if next_rect.colliderect(puerta.rect) and not puerta.permite_paso((dx, dy)):
+                            bloqueado = True
+                            break
+                    if bloqueado:
+                        continue  # Saltar esta dirección si la puerta no permite pasar
 
-                self.x += dx * self.speed
-                self.y += dy * self.speed
+                nueva_x = self.x + dx * self.speed
+                nueva_y = self.y + dy * self.speed
+                distancia = math.hypot(self.target[0] - nueva_x, self.target[1] - nueva_y)
+                distancias.append((distancia, d))
 
-            self.rect.center = (self.x, self.y)
+            if distancias:
+                distancias.sort(key=lambda x: x[0])
+                self.direction = distancias[0][1]
 
-            self.anim_counter += 1
-            if self.anim_counter >= self.anim_speed:
-                self.anim_counter = 0
-                dir_vector = direction_vectors[self.direction]
-                self.anim_frame = (self.anim_frame + 1) % len(self.imagenes[dir_vector])
+        if self.turns[self.direction]:
+            dx, dy = direction_vectors[self.direction]
 
-            return self.x, self.y, self.direction
+            if puertas_group:
+                next_rect = self.rect.copy()
+                next_rect.center = (self.x + dx * self.speed, self.y + dy * self.speed)
+                for puerta in puertas_group:
+                    if next_rect.colliderect(puerta.rect):
+                        if not puerta.permite_paso((dx, dy)):
+                            return self.x, self.y, self.direction  # Bloqueado por la puerta
+
+            self.x += dx * self.speed
+            self.y += dy * self.speed
+
+        self.rect.center = (self.x, self.y)
+
+        # Actualizar animación
+        self.anim_counter += 1
+        if self.anim_counter >= self.anim_speed:
+            self.anim_counter = 0
+            dir_vector = direction_vectors[self.direction]
+            self.anim_frame = (self.anim_frame + 1) % len(self.imagenes[dir_vector])
+
+        return self.x, self.y, self.direction
+
 
     def actualizar_turns(self, muros_group):
         self.rect.center = (self.x, self.y)
@@ -218,7 +244,11 @@ class oscar(Sprite):
             2: (0, -1),
             3: (0, 1)
         }
-        dir_vector = direction_vectors[self.direction]
-        imagen_actual = self.imagenes[dir_vector][self.anim_frame]
+        if self.modo_miedo:
+            imagen_actual = self.imagen_miedo
+        else:
+            dir_vector = direction_vectors[self.direction]
+            imagen_actual = self.imagenes[dir_vector][self.anim_frame]
+
         rect_imagen = imagen_actual.get_rect(center=(int(self.x), int(self.y)))
         screen.blit(imagen_actual, rect_imagen)
