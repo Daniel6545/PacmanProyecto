@@ -140,8 +140,9 @@ class Juego:
                     if self.detectar_colision_mejorada(self.pacman, fantasma)
                 ]
         if fantasmas_colision:
-            for fantasma in self.fantasmas_group:
+            for fantasma in fantasmas_colision:
                 if self.superpoder_activo and fantasma.modo_miedo:
+                    self.puntuacion += 100
                     for fantasma in fantasmas_colision:
                         self.reiniciar_fantasma(fantasma)
                 else:
@@ -153,6 +154,8 @@ class Juego:
                     else:
                         self.reiniciar_pacman()
                         self.reiniciar_Fantasmas()
+
+
         # Superpoder recogido
         if pygame.sprite.spritecollide(self.pacman, self.superpoder_group, True):
             self.superpoder_activo = True
