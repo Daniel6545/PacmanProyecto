@@ -4,10 +4,12 @@ SCREEN_HEIGHT = 504
 tamaño = 21
 tamaño_pacman = 20  # o el tamaño que prefieras, menor que 21
 tamaño_fant = 19
+tile_size=21
 Pac_Vel= 1.6
 Alberto_speed= 1.4
 Juan_speed = 1.3
 Oscar_speed = 1
+Speed_miedo_Fantasmas=0.8
 directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
 scatter_targetA = [SCREEN_WIDTH - 30, 30]
 scatter_targetO = [30, 30]
@@ -18,7 +20,8 @@ YELLOW=(255,255,0) #color pacman
 Rojo=(255, 0, 0)
 Dorado=(255, 215, 0)
 Verde=(0,255,0)
-tile_size=21
+super_duration = 7000
+
 colores_paredes = {
             '1': (0, 0, 255),  # Azul
             '2': (255, 0, 0),  # Rojo

@@ -20,7 +20,7 @@ class Juego:
         self.colores_paredes = colores_paredes
 
         self.running = True
-
+        self.super_duration= super_duration
         self.muro_grupo = pygame.sprite.Group()
         self.coin_group = pygame.sprite.Group()
         self.fantasmas_group = pygame.sprite.Group()
@@ -144,10 +144,15 @@ class Juego:
 
         if self.superpoder_activo:
             tiempo_actual = pygame.time.get_ticks()
-            if tiempo_actual - self.superpoder_tiempo > 7000:
+            tiempo_pasado = tiempo_actual - self.superpoder_tiempo
+            if tiempo_pasado >= self.super_duration:
                 self.superpoder_activo = False
                 for fantasma in self.fantasmas_group:
                     fantasma.desactivar_miedo()
+            elif tiempo_pasado >= self.super_duration - 2000:
+                for fantasma in self.fantasmas_group:
+                    fantasma.parpadeo = True
+
 
     def eventos(self):
         for event in pygame.event.get():
