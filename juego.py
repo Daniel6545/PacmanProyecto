@@ -28,13 +28,14 @@ class Juego:
         self.fantasmas_group = pygame.sprite.Group()
         self.puertas_group = pygame.sprite.Group()
         self.superpoder_group = pygame.sprite.Group()
-
+        self.tunel_group = pygame.sprite.Group()
         self.clock = pygame.time.Clock()
         self.fuente = pygame.font.SysFont("Calibri", 20)
         self.puntuacion = 0
         self.vidas = 3  # vidas PacMan
         self.mostrar_ready = True
         self.nivel=0
+        self.radio_colision = 10
 
         self.mapa_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
 
@@ -87,6 +88,11 @@ class Juego:
                     cy = y * self.tile_size + self.tile_size // 2
                     self.poder = Superpoder(cx, cy)
                     self.superpoder_group.add(self.poder)
+                elif celda == "T":
+                    tunel_x = x * self.tile_size + self.tile_size // 2
+                    tunel_y = y * self.tile_size + self.tile_size // 2
+                    self.tunel = tunel(tunel_x, tunel_y, tile_size)
+                    self.tunel_group.add(self.tunel)
 
     def detectar_colision_mejorada(self, pacman, fantasma):
         dx = pacman.rect.centerx - fantasma.rect.centerx
@@ -94,11 +100,6 @@ class Juego:
         distancia = math.hypot(dx, dy)
         return distancia < self.radio_colision
 
-                elif celda == "T":
-                    tunel_x = x * self.tile_size + self.tile_size // 2
-                    tunel_y = y * self.tile_size + self.tile_size // 2
-                    self.tunel = tunel(tunel_x, tunel_y, tile_size)
-                    self.tunel_group.add(self.tunel)
     def update(self):
         keys = pygame.key.get_pressed()
 
@@ -122,7 +123,7 @@ class Juego:
         if not self.mostrar_ready:
             self.pacman.mover(self.muro_grupo, self.puertas_group)
             for fantasma in self.fantasmas_group:
-                fantasma.move((self.pacman.x, self.pacman.y), self.puertas_group)
+                fantasma.mover((self.pacman.x, self.pacman.y), self.puertas_group, self.tunel_group)
 
 
 
@@ -134,8 +135,10 @@ class Juego:
                 self.nivel += 0.05
                 self.reiniciar_nivel()
 
-        # Colisión con fantasmas
-        fantasmas_colision = pygame.sprite.spritecollide(self.pacman, self.fantasmas_group, False)
+        fantasmas_colision = [
+                    fantasma for fantasma in self.fantasmas_group
+                    if self.detectar_colision_mejorada(self.pacman, fantasma)
+                ]
         if fantasmas_colision:
             if self.superpoder_activo:
                 for fantasma in fantasmas_colision:

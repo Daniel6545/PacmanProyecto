@@ -102,6 +102,7 @@ class oscar(Sprite):
         self.modo_miedo = True
         self.speed = self.speed_miedo
         self.mode_timer = pygame.time.get_ticks()
+        self.parpadeo = False
 
     def desactivar_miedo(self):
         self.speed = Oscar_speed  + self.nivel
@@ -171,7 +172,7 @@ class oscar(Sprite):
             3: (0, 1)  # abajo
         }
 
-        self.actualizar_turns(self.muros_grupo)
+        self.actualizar_turns(self.muros_grupo, tunel_group)
 
         posibles_dirs = [d for d in range(4) if self.turns[d]]
 
@@ -216,12 +217,6 @@ class oscar(Sprite):
                     if next_rect.colliderect(puerta.rect):
                         if not puerta.permite_paso((dx, dy)):
                             return self.x, self.y, self.direction  # Bloqueado por la puerta
-            if tunel_group:
-                next_rect = self.rect.copy()
-                next_rect.center = (self.x + dx * self.speed, self.y + dy * self.speed)
-                for tunel in tunel_group:
-                    if next_rect.colliderect(tunel.rect):
-                        return self.x, self.y, self.direction  # Bloqueado por la puerta
             self.x += dx * self.speed
             self.y += dy * self.speed
 
@@ -236,31 +231,37 @@ class oscar(Sprite):
 
         return self.x, self.y, self.direction
 
-
-    def actualizar_turns(self, muros_group):
+    def actualizar_turns(self, muros_group, tunel_group):
         self.rect.center = (self.x, self.y)
-        # Chequear colisión probando mover Blinky un paso en cada dirección
         self.turns = [False, False, False, False]
-        step = self.speed  # o un valor pequeño
+        step = self.speed
 
-        # derecha
+        # Derecha
         self.rect.x += step
-        self.turns[0] = not pygame.sprite.spritecollideany(self, muros_group)
+        colision_muro = pygame.sprite.spritecollideany(self, muros_group)
+        colision_tunel = pygame.sprite.spritecollideany(self, tunel_group)
+        self.turns[0] = not (colision_muro or colision_tunel)
         self.rect.x -= step
 
-        # izquierda
+        # Izquierda
         self.rect.x -= step
-        self.turns[1] = not pygame.sprite.spritecollideany(self, muros_group)
+        colision_muro = pygame.sprite.spritecollideany(self, muros_group)
+        colision_tunel = pygame.sprite.spritecollideany(self, tunel_group)
+        self.turns[1] = not (colision_muro or colision_tunel)
         self.rect.x += step
 
-        # arriba
+        # Arriba
         self.rect.y -= step
-        self.turns[2] = not pygame.sprite.spritecollideany(self, muros_group)
+        colision_muro = pygame.sprite.spritecollideany(self, muros_group)
+        colision_tunel = pygame.sprite.spritecollideany(self, tunel_group)
+        self.turns[2] = not (colision_muro or colision_tunel)
         self.rect.y += step
 
         # abajo
         self.rect.y += step
-        self.turns[3] = not pygame.sprite.spritecollideany(self, muros_group)
+        colision_muro = pygame.sprite.spritecollideany(self, muros_group)
+        colision_tunel = pygame.sprite.spritecollideany(self, tunel_group)
+        self.turns[3] = not (colision_muro or colision_tunel)
         self.rect.y -= step
 
     def draw(self, screen):
