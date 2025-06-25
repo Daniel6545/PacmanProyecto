@@ -140,18 +140,19 @@ class Juego:
                     if self.detectar_colision_mejorada(self.pacman, fantasma)
                 ]
         if fantasmas_colision:
-            if self.superpoder_activo:
-                for fantasma in fantasmas_colision:
-                    self.reiniciar_fantasma(fantasma)
-            else:
-                self.vidas -= 1
-                pygame.time.delay(1500)
-                if self.vidas <= 0:
-                    print("GAME OVER")
-                    self.running = False
+            for fantasma in self.fantasmas_group:
+                if self.superpoder_activo and fantasma.modo_miedo:
+                    for fantasma in fantasmas_colision:
+                        self.reiniciar_fantasma(fantasma)
                 else:
-                    self.reiniciar_pacman()
-                    self.reiniciar_Fantasmas()
+                    self.vidas -= 1
+                    pygame.time.delay(1500)
+                    if self.vidas <= 0:
+                        print("GAME OVER")
+                        self.running = False
+                    else:
+                        self.reiniciar_pacman()
+                        self.reiniciar_Fantasmas()
         # Superpoder recogido
         if pygame.sprite.spritecollide(self.pacman, self.superpoder_group, True):
             self.superpoder_activo = True
