@@ -73,7 +73,6 @@ class pacman(Sprite):
         rect_y.y = int(nueva_y)
         if self.puede_moverse(rect_y, puertas_group, muros, dx, dy):
             self.y = nueva_y
-        print(self.direccion_actual)
 
         # Teletransporte lateral para túneles
         if self.rect.right < 0:
