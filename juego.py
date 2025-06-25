@@ -9,6 +9,7 @@ from Oscar import oscar
 from Juan import juan
 from Puerta import puerta
 from Superpoder import Superpoder
+import math
 
 class Juego:
     def __init__(self):
@@ -33,6 +34,7 @@ class Juego:
         self.vidas = 3  # vidas PacMan
         self.mostrar_ready = True
         self.nivel=0
+        self.radio_colision=10 #Radio colisiones ( pacman vs fantasmas )
 
         self.mapa_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
 
@@ -85,6 +87,13 @@ class Juego:
                     cy = y * self.tile_size + self.tile_size // 2
                     self.poder = Superpoder(cx, cy)
                     self.superpoder_group.add(self.poder)
+
+    def detectar_colision_mejorada(self, pacman, fantasma):
+        dx = pacman.rect.centerx - fantasma.rect.centerx
+        dy = pacman.rect.centery - fantasma.rect.centery
+        distancia = math.hypot(dx, dy)
+        return distancia < self.radio_colision
+
     def update(self):
         keys = pygame.key.get_pressed()
 
@@ -121,7 +130,10 @@ class Juego:
                 self.reiniciar_nivel()
 
         # Colisión con fantasmas
-        fantasmas_colision = pygame.sprite.spritecollide(self.pacman, self.fantasmas_group, False)
+        fantasmas_colision = [
+            fantasma for fantasma in self.fantasmas_group
+            if self.detectar_colision_mejorada(self.pacman, fantasma)
+        ]
         if fantasmas_colision:
             if self.superpoder_activo:
                 for fantasma in fantasmas_colision:
