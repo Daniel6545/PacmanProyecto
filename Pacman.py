@@ -50,6 +50,8 @@ class pacman(Sprite):
                 if hasattr(puerta, "permite_paso") and not puerta.permite_paso((dx, dy)):
                     return False
         return True
+
+
     def mover(self, muros, puertas_group):
         dx, dy = self.direccion_objetivo
         if dx != 0 or dy != 0:

@@ -4,13 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e96988c2-0388-42d4-a543-d44df32f107b" name="Changes" comment="Millores">
-      <change afterPath="$PROJECT_DIR$/Tunel.py" afterDir="false" />
+    <list default="true" id="e96988c2-0388-42d4-a543-d44df32f107b" name="Changes" comment="Porta implementada + colisions amb porta">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Alberto.py" beforeDir="false" afterPath="$PROJECT_DIR$/Alberto.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Config.py" beforeDir="false" afterPath="$PROJECT_DIR$/Config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Juan.py" beforeDir="false" afterPath="$PROJECT_DIR$/Juan.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Oscar.py" beforeDir="false" afterPath="$PROJECT_DIR$/Oscar.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Superpoder.py" beforeDir="false" afterPath="$PROJECT_DIR$/Superpoder.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/juego.py" beforeDir="false" afterPath="$PROJECT_DIR$/juego.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -28,7 +24,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="feature/Pinky" />
+        <entry key="$PROJECT_DIR$" value="feature/Superpoder" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -39,12 +35,12 @@
     &quot;assignee&quot;: &quot;Daniel6545&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/Daniel6545/PacmanProyecto.git&quot;,
-    &quot;accountId&quot;: &quot;32cabc0d-f30f-4273-8b20-389383af54a9&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Daniel6545/PacmanProyecto.git",
+    "accountId": "86c94a3c-d2ec-4566-8356-4cede9a0e6cf"
   }
-}</component>
+}]]></component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/Fantasma.py" root0="FORCE_HIGHLIGHTING" />
   </component>
@@ -62,7 +58,7 @@
     "Python.juego.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "feature/Millores",
+    "git-widget-placeholder": "feature/SpriteSuperpoder",
     "ignore.virus.scanning.warn.message": "true",
     "last_opened_file_path": "C:/Users/ruizs/PacmanProyecto",
     "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
@@ -121,9 +117,9 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.juego" />
-        <item itemvalue="Python.MAIN" />
         <item itemvalue="Python.juego" />
         <item itemvalue="Python.MAIN" />
+        <item itemvalue="Python.juego" />
         <item itemvalue="Python.MAIN" />
       </list>
     </recent_temporary>
@@ -131,7 +127,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-a5bc9544c897-aa17d162503b-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-243.23654.177" />
+        <option value="bundled-python-sdk-fc1d50d2d915-aa17d162503b-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-243.24978.54" />
       </set>
     </attachedChunks>
   </component>
@@ -224,23 +220,7 @@
       <option name="project" value="LOCAL" />
       <updated>1750409583912</updated>
     </task>
-    <task id="LOCAL-00011" summary="Superpoder">
-      <option name="closed" value="true" />
-      <created>1750791816637</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1750791816637</updated>
-    </task>
-    <task id="LOCAL-00012" summary="Millores">
-      <option name="closed" value="true" />
-      <created>1750846414712</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1750846414712</updated>
-    </task>
-    <option name="localTasksCounter" value="13" />
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -258,19 +238,8 @@
     <MESSAGE value="Para configurar" />
     <MESSAGE value="Cambio de ventana" />
     <MESSAGE value="Blinky añadido" />
-    <MESSAGE value="Porta implementada + colisions amb porta" />
-    <MESSAGE value="Superpoder" />
     <MESSAGE value="Millores" />
-    <option name="LAST_COMMIT_MESSAGE" value="Millores" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Puerta.py</url>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="Porta implementada + colisions amb porta" />
+    <option name="LAST_COMMIT_MESSAGE" value="Porta implementada + colisions amb porta" />
   </component>
 </project>
