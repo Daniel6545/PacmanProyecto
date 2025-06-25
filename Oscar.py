@@ -9,9 +9,11 @@ class oscar(Sprite):
         super().__init__()
         self.x = x_inicial
         self.y = y_inicial
+        self.nivel=nivel
         self.direction = 0
         self.color = WHITE
         self.speed = Oscar_speed + nivel
+        self.speed_miedo=Speed_miedo_Fantasmas
         self.modo_miedo = False
         self.scatter_target = scatter_targetO
         self.mode = "chase"
@@ -56,10 +58,25 @@ class oscar(Sprite):
                 imagen = pygame.transform.scale(imagen, (tamaño_fant, tamaño_fant))
                 lista_imagenes.append(imagen)
             self.imagenes[direccion] = lista_imagenes
-        imagen_miedo = pygame.image.load(os.path.join("Sprites", "FantasmaMiedo.png")).convert_alpha()
-        self.imagen_miedo = pygame.transform.scale(imagen_miedo, (tamaño_fant, tamaño_fant))
+        self.imagenes_super = []
+        for archivo in ["FantasmaSuperpoder.png", "FantasmaSuperpoder2.png"]:
+            img = pygame.image.load(os.path.join("Sprites", archivo)).convert_alpha()
+            img = pygame.transform.scale(img, (tamaño_fant, tamaño_fant))
+            self.imagenes_super.append(img)
+
+        self.imagenes_parpadeo = []
+        for archivo in ["FantasmaSuperpoderFinal.png", "FantasmaSuperpoderFinal2.png"]:
+            img = pygame.image.load(os.path.join("Sprites", archivo)).convert_alpha()
+            img = pygame.transform.scale(img, (tamaño_fant, tamaño_fant))
+            self.imagenes_parpadeo.append(img)
+
+        self.super_timer = 0
+        self.parpadeo = False
+        self.parpadeo_timer = 0
+        self.parpadeo_interval = 300
+        self.parpadeo_frame = 0
         self.anim_frame = 0
-        self.anim_speed = 10
+        self.anim_speed = 10  # frames para cambiar la imagen
         self.anim_counter = 0
 
         self.muerto = False
@@ -83,10 +100,13 @@ class oscar(Sprite):
 
     def activar_miedo(self):
         self.modo_miedo = True
+        self.speed = self.speed_miedo
         self.mode_timer = pygame.time.get_ticks()
 
     def desactivar_miedo(self):
+        self.speed = Oscar_speed  + self.nivel
         self.modo_miedo = False
+        self.parpadeo=False
 
     def move(self, pacman_pos, puertas_group):
         # Teletransporte lateral para túneles
@@ -96,6 +116,7 @@ class oscar(Sprite):
             self.x = -self.rect.width
 
         self.rect.topleft = (int(self.x), int(self.y))
+
         if not self.puede_salir:
             tiempo_actual = pygame.time.get_ticks()
             if tiempo_actual - self.tiempo_creacion >= self.delay_inicio:
@@ -244,10 +265,22 @@ class oscar(Sprite):
             2: (0, -1),
             3: (0, 1)
         }
+        dir_vector = direction_vectors[self.direction]
+
         if self.modo_miedo:
-            imagen_actual = self.imagen_miedo
+            if self.parpadeo:
+                current_time = pygame.time.get_ticks()
+                if current_time - self.parpadeo_timer > self.parpadeo_interval:
+                    self.parpadeo_timer = current_time
+                    self.parpadeo_frame = (self.parpadeo_frame + 1) % 2
+                imagen_actual = (
+                    self.imagenes_super[self.anim_frame % len(self.imagenes_super)]
+                    if self.parpadeo_frame == 0
+                    else self.imagenes_parpadeo[self.anim_frame % len(self.imagenes_parpadeo)]
+                )
+            else:
+                imagen_actual = self.imagenes_super[self.anim_frame % len(self.imagenes_super)]
         else:
-            dir_vector = direction_vectors[self.direction]
             imagen_actual = self.imagenes[dir_vector][self.anim_frame]
 
         rect_imagen = imagen_actual.get_rect(center=(int(self.x), int(self.y)))

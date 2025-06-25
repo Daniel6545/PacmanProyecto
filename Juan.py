@@ -10,7 +10,9 @@ class juan(Sprite):
         self.x = x_inicial
         self.y = y_inicial
         self.direction = 0
-        self.speed = Juan_speed + nivel
+        self.nivel =nivel
+        self.speed = Juan_speed + self.nivel
+        self.speed_miedo=Speed_miedo_Fantasmas
         self.scatter_target = scatter_targetJ
         self.mode = "chase"
         self.muros_grupo = muros_grupo
@@ -55,8 +57,25 @@ class juan(Sprite):
                 imagen = pygame.transform.scale(imagen, (tamaño_fant, tamaño_fant))
                 lista_imagenes.append(imagen)
             self.imagenes[direccion] = lista_imagenes
-        imagen_miedo = pygame.image.load(os.path.join("Sprites", "FantasmaMiedo.png")).convert_alpha()
-        self.imagen_miedo = pygame.transform.scale(imagen_miedo, (tamaño_fant, tamaño_fant))
+        self.imagenes_super = []
+        for archivo in ["FantasmaSuperpoder.png", "FantasmaSuperpoder2.png"]:
+            img = pygame.image.load(os.path.join("Sprites", archivo)).convert_alpha()
+            img = pygame.transform.scale(img, (tamaño_fant, tamaño_fant))
+            self.imagenes_super.append(img)
+
+        self.imagenes_parpadeo = []
+        for archivo in ["FantasmaSuperpoderFinal.png", "FantasmaSuperpoderFinal2.png"]:
+            img = pygame.image.load(os.path.join("Sprites", archivo)).convert_alpha()
+            img = pygame.transform.scale(img, (tamaño_fant, tamaño_fant))
+            self.imagenes_parpadeo.append(img)
+
+        self.super_modo = False
+        self.super_timer = 0
+        self.parpadeo = False
+        self.parpadeo_timer = 0
+        self.parpadeo_interval = 300
+        self.parpadeo_frame = 0
+
         self.anim_frame = 0
         self.anim_speed = 10
         self.anim_counter = 0
@@ -71,11 +90,15 @@ class juan(Sprite):
             self.mode_timer = current_time
 
     def activar_miedo(self):
+        self.speed = self.speed_miedo
         self.modo_miedo = True
         self.mode_timer = pygame.time.get_ticks()
 
     def desactivar_miedo(self):
+        self.speed = Juan_speed + self.nivel
         self.modo_miedo = False
+        self.parpadeo=False
+
 
     def move(self, pacman_pos, puertas_group):
         # Teletransporte lateral para túneles
@@ -132,7 +155,7 @@ class juan(Sprite):
         else:
             self.target = pacman_pos if self.mode == "chase" else self.scatter_target
 
-        # --- Aquí empieza la lógica común de movimiento ---
+
         direction_vectors = {
             0: (1, 0),  # derecha
             1: (-1, 0),  # izquierda
@@ -228,10 +251,22 @@ class juan(Sprite):
             2: (0, -1),
             3: (0, 1)
         }
+        dir_vector = direction_vectors[self.direction]
+
         if self.modo_miedo:
-            imagen_actual = self.imagen_miedo
+            if self.parpadeo:
+                current_time = pygame.time.get_ticks()
+                if current_time - self.parpadeo_timer > self.parpadeo_interval:
+                    self.parpadeo_timer = current_time
+                    self.parpadeo_frame = (self.parpadeo_frame + 1) % 2
+                imagen_actual = (
+                    self.imagenes_super[self.anim_frame % len(self.imagenes_super)]
+                    if self.parpadeo_frame == 0
+                    else self.imagenes_parpadeo[self.anim_frame % len(self.imagenes_parpadeo)]
+                )
+            else:
+                imagen_actual = self.imagenes_super[self.anim_frame % len(self.imagenes_super)]
         else:
-            dir_vector = direction_vectors[self.direction]
             imagen_actual = self.imagenes[dir_vector][self.anim_frame]
 
         rect_imagen = imagen_actual.get_rect(center=(int(self.x), int(self.y)))

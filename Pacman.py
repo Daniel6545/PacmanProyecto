@@ -33,13 +33,11 @@ class pacman(Sprite):
 
         self.frame_animacion = 0  # Contador para frame actual de animación
         self.contador_animacion = 0  # Contador para controlar cambio de frame
-
         self.image = self.imagenes[self.direccion_actual][0] #Imagen inicial
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
-
         self.velocidad = Pac_Vel
 
     def puede_moverse(self, nuevo_rect, puertas_group, muros, dx, dy):
@@ -61,8 +59,6 @@ class pacman(Sprite):
             if self.puede_moverse(rect_prueba, puertas_group, muros, dx, dy):
                 self.direccion_actual = self.direccion_objetivo
 
-        dx, dy = self.direccion_actual
-
         # Movimiento horizontal con chequeo de colisión
         dx, dy = self.direccion_actual
         nueva_x = self.x + dx * self.velocidad
@@ -77,6 +73,7 @@ class pacman(Sprite):
         rect_y.y = int(nueva_y)
         if self.puede_moverse(rect_y, puertas_group, muros, dx, dy):
             self.y = nueva_y
+        print(self.direccion_actual)
 
         # Teletransporte lateral para túneles
         if self.rect.right < 0:
