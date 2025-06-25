@@ -153,6 +153,8 @@ class Juego:
                 for fantasma in self.fantasmas_group:
                     fantasma.parpadeo = True
 
+        self.superpoder_group.update() #llama al update de Superpoder para el parpadeo
+
 
     def eventos(self):
         for event in pygame.event.get():
@@ -247,8 +249,9 @@ class Juego:
 
         # Dibujar Pac-Man
         self.pacman.draw(self.ventana)
-        #dibuja Superpoder
-        self.superpoder_group.draw(self.ventana)
+        #Dibujar Superpoder
+        for superpoder in self.superpoder_group:
+            superpoder.draw(self.ventana)
 
         # Mostrar puntuación
         texto = self.fuente.render(f"SCORE: {self.puntuacion}", True, WHITE)
