@@ -9,6 +9,7 @@ from Oscar import oscar
 from Juan import juan
 from Puerta import puerta
 from Superpoder import Superpoder
+from Tunel import tunel
 
 class Juego:
     def __init__(self):
@@ -26,6 +27,7 @@ class Juego:
         self.fantasmas_group = pygame.sprite.Group()
         self.puertas_group = pygame.sprite.Group()
         self.superpoder_group = pygame.sprite.Group()
+        self.tunel_group = pygame.sprite.Group()
 
         self.clock = pygame.time.Clock()
         self.fuente = pygame.font.SysFont("Calibri", 20)
@@ -85,6 +87,11 @@ class Juego:
                     cy = y * self.tile_size + self.tile_size // 2
                     self.poder = Superpoder(cx, cy)
                     self.superpoder_group.add(self.poder)
+                elif celda == "T":
+                    tunel_x = x * self.tile_size + self.tile_size // 2
+                    tunel_y = y * self.tile_size + self.tile_size // 2
+                    self.tunel = tunel(tunel_x, tunel_y, tile_size)
+                    self.tunel_group.add(self.tunel)
     def update(self):
         keys = pygame.key.get_pressed()
 
@@ -108,7 +115,7 @@ class Juego:
         if not self.mostrar_ready:
             self.pacman.mover(self.muro_grupo, self.puertas_group)
             for fantasma in self.fantasmas_group:
-                fantasma.move((self.pacman.x, self.pacman.y), self.puertas_group)
+                fantasma.mover((self.pacman.x, self.pacman.y), self.puertas_group, self.tunel_group)
 
 
 
@@ -119,22 +126,30 @@ class Juego:
                 pygame.time.delay(2000)
                 self.nivel += 0.05
                 self.reiniciar_nivel()
+        #tunel colision:
+
+        if pygame.sprite.spritecollide(self.pacman, self.tunel_group, False):
+            print("hola")
+            self.pacman.direccion_objetivo = ( self.pacman.direccion_objetivo[0], 0)
+
 
         # Colisión con fantasmas
         fantasmas_colision = pygame.sprite.spritecollide(self.pacman, self.fantasmas_group, False)
         if fantasmas_colision:
-            if self.superpoder_activo:
-                for fantasma in fantasmas_colision:
-                    self.reiniciar_fantasma(fantasma)
-            else:
-                self.vidas -= 1
-                pygame.time.delay(1500)
-                if self.vidas <= 0:
-                    print("GAME OVER")
-                    self.running = False
+            for fantasma in fantasmas_colision:
+                if self.superpoder_activo and fantasma.modo_miedo:
+                    self.puntuacion += 100
+                    for fantasma in fantasmas_colision:
+                        self.reiniciar_fantasma(fantasma)
                 else:
-                    self.reiniciar_pacman()
-                    self.reiniciar_Fantasmas()
+                    self.vidas -= 1
+                    pygame.time.delay(1500)
+                    if self.vidas <= 0:
+                        print("GAME OVER")
+                        self.running = False
+                    else:
+                        self.reiniciar_pacman()
+                        self.reiniciar_Fantasmas()
         # Superpoder recogido
         if pygame.sprite.spritecollide(self.pacman, self.superpoder_group, True):
             self.superpoder_activo = True
@@ -203,16 +218,19 @@ class Juego:
                     self.alberto.y = cy
                     self.alberto.rect.topleft = (self.alberto.x, self.alberto.y)
                     self.alberto.direccion_actual = (0, 0)
+                    self.alberto.desactivar_miedo()
                 if celda == "O" and hasattr(self, "oscar"):
                     self.oscar.x = cx
                     self.oscar.y = cy
                     self.oscar.rect.topleft = (self.oscar.x, self.oscar.y)
                     self.oscar.direccion_actual = (0, 0)
+                    self.oscar.desactivar_miedo()
                 if celda == "J" and hasattr(self, "juan"):
                     self.juan.x = cx
                     self.juan.y = cy
                     self.juan.rect.topleft = (self.juan.x, self.juan.y)
                     self.juan.direccion_actual = (0, 0)
+                    self.juan.desactivar_miedo()
 
     def reiniciar_fantasma(self, fantasma):
         fantasma.desactivar_miedo()

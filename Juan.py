@@ -100,7 +100,7 @@ class juan(Sprite):
         self.parpadeo=False
 
 
-    def move(self, pacman_pos, puertas_group):
+    def mover(self, pacman_pos, puertas_group, tunel_group):
         # Teletransporte lateral para túneles
         if self.rect.right < 0:
             self.x = SCREEN_WIDTH
@@ -207,7 +207,12 @@ class juan(Sprite):
                     if next_rect.colliderect(puerta.rect):
                         if not puerta.permite_paso((dx, dy)):
                             return self.x, self.y, self.direction  # Bloqueado por la puerta
-
+            if tunel_group:
+                next_rect = self.rect.copy()
+                next_rect.center = (self.x + dx * self.speed, self.y + dy * self.speed)
+                for tunel in tunel_group:
+                    if next_rect.colliderect(tunel.rect):
+                        return self.x, self.y, self.direction  # Bloqueado por la puerta
             self.x += dx * self.speed
             self.y += dy * self.speed
 
